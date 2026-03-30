@@ -40,3 +40,4 @@ python3 -m http.server 8080
 ## Deploy
 
 Connect this repo to Cloudflare Pages (or GitHub Pages). Push = deploy.
+# intelligenism-club-site
