@@ -340,7 +340,7 @@
 
                 // Articles: article + doc categories
                 const articles = pages
-                    .filter(p => p.category === 'article' || p.category === 'doc')
+                    .filter(p => p.category === 'article')
                     .sort((a, b) => b.date.localeCompare(a.date));
                 renderArticles(articles);
 
