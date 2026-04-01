@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligenism — Condensed Theory Reference</title>
+    <meta name="article-date" content="2026-03-30">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="Core theory of Intelligenism: from epistemology to organisational intelligence, the Intelligent Consortium, and carbon-silicon symbiosis.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .top-bar {
+            border-bottom: 1px solid var(--border-dim);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep);
+            z-index: 100;
+        }
+        .top-bar-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        .theory-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold) !important;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid rgba(240,200,102,0.3);
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .theory-link:hover {
+            background: rgba(240,200,102,0.1);
+            border-color: var(--accent-gold);
+        }
+
+        .article {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .article-header {
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+        .article-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--accent-cyan);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            text-shadow: 0 0 25px rgba(0,229,160,0.25);
+        }
+        .article-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-gold);
+            margin-top: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+        .article-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+        .article-meta .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        .article h2 {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin: 56px 0 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.03em;
+        }
+        .article h3 {
+            font-family: var(--font-pixel);
+            font-size: 1.35rem;
+            color: var(--accent-gold);
+            margin: 36px 0 14px;
+        }
+
+        .article p {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .article strong {
+            color: var(--bold-color);
+            font-weight: 600;
+        }
+
+        .article blockquote {
+            border-left: 3px solid var(--accent-gold);
+            background: rgba(240,200,102,0.06);
+            padding: 16px 20px;
+            margin: 24px 0;
+            font-size: 0.88rem;
+            color: #d0d0c8;
+            line-height: 1.7;
+        }
+        .article blockquote .quote-source {
+            display: block;
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--accent-gold);
+            font-size: 0.82rem;
+        }
+
+        .article ul, .article ol {
+            margin: 12px 0 20px 20px;
+        }
+        .article li {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+        .article li strong {
+            color: var(--accent-gold);
+        }
+
+        .article pre {
+            background: #0e0e1c;
+            border: 1px solid var(--border-dim);
+            padding: 18px 20px;
+            margin: 16px 0 24px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #c8c8d0;
+        }
+        .article code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            background: rgba(0,229,160,0.08);
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+        .article pre code {
+            background: none;
+            padding: 0;
+            color: #c8c8d0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0 28px;
+        }
+        .article table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .article thead th {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--border-dim);
+            white-space: nowrap;
+        }
+        .article tbody td {
+            padding: 9px 14px;
+            border: 1px solid var(--border-dim);
+            color: var(--text-bright);
+            vertical-align: top;
+        }
+        .article tbody tr:nth-child(even) {
+            background: rgba(26,26,50,0.5);
+        }
+        .article tbody td:first-child {
+            color: var(--accent-gold);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-cyan);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box p {
+            margin-bottom: 8px;
+        }
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .article hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-dim), transparent);
+            margin: 48px 0;
+        }
+
+        .article a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        .article a:hover {
+            text-decoration: underline;
+        }
+
+        /* concept index */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2px;
+        }
+        .concept-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            padding: 14px 18px;
+        }
+        .concept-name {
+            font-family: var(--font-pixel);
+            font-size: 1.15rem;
+            color: var(--accent-gold);
+            margin-bottom: 4px;
+        }
+        .concept-def {
+            font-size: 0.85rem;
+            color: var(--text-bright);
+            line-height: 1.6;
+        }
+
+        .footer {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px;
+            border-top: 1px solid var(--border-dim);
+            text-align: center;
+        }
+        .footer-text {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .footer-text a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .article { padding: 32px 16px 60px; }
+            .article h2 { font-size: 1.5rem; margin-top: 40px; }
+            .article h3 { font-size: 1.2rem; }
+            .top-bar-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-links { gap: 12px; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#philosophy">Philosophy</a>
+                <a href="#intelligence">Intelligence</a>
+                <a href="#organisation">Organisation</a>
+                <a href="#consortium">Consortium</a>
+                <a href="#symbiosis">Symbiosis</a>
+                <a href="#index">Index</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism 理论全书 ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">Intelligenism — Condensed Theory Reference</h1>
+            <p class="article-tagline">From epistemology to organisational intelligence: the theoretical foundation for the Intelligenism Agent ecosystem.</p>
+            <p class="article-meta">Original author: Minghai Zhuo · Condensed edition 2025 <span class="badge">THEORY</span></p>
+        </header>
+
+        <p>This document is a condensed distillation of the complete work <strong>Thinking, Conception and Construction of Intelligenism</strong> by Minghai Zhuo. It preserves the core logical chain of the original work while compressing repetitive argumentation and overly detailed case studies, for the purpose of systematic reference and retrieval.</p>
+
+        <hr>
+
+        <!-- PART 1 -->
+        <h2 id="philosophy">Part One: Philosophical Foundation</h2>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 24px;">The Epistemological Basis of Intelligenism</p>
+
+        <h3>1.1 Rejection of Absolute Truth</h3>
+        <p>The starting point of Intelligenism is an epistemological judgement: <strong>humanity cannot assert that any theory is absolute truth.</strong> From geocentrism to heliocentrism to modern astrophysics, every generation's "truth" has been overturned by subsequent theories. This means that theory perpetually occupies an intermediate state — neither absolute truth nor absolute falsehood. Popper's falsification can only negate absolute truth, but cannot confirm that any theory fails in all scenarios — therefore absolute falsehood is equally unassertable.</p>
+
+        <h3>1.2 Theoretical Adaptability</h3>
+        <p>Since absolute truth cannot be asserted, the method for evaluating theory should shift to <strong>Theoretical Adaptability</strong>: whether a theory can effectively guide action and generate positive value in a specific context. Geocentrism still had adaptability in ancient agricultural contexts; it merely failed in the context of interstellar navigation. This introduces the concept of <strong>The Cost-Benefit of Theoretical Adaptability</strong>: when individuals choose which theory to apply, they consider not only the strength of adaptability but also the cost of replacement and potential return.</p>
+
+        <h3>1.3 Theoretical Openness</h3>
+        <p>Theoretical Openness is the behavioural extension of the adaptability principle: not rejecting new theories due to existing cognitive inertia; not negating the entire value of another's theory upon discovering its errors, but instead exploring its adaptability in specific contexts. Respect for others' value propositions is the natural corollary of Theoretical Openness.</p>
+
+        <h3>1.4 Competition and Theoretical Belief Disengagement</h3>
+        <p>Fair competition is a vital means of driving individuals and organisational collectives toward maximising theoretical benefit. <strong>Individuals must be able to disengage from their endorsement and application of certain theories at any time according to their own needs.</strong> Any behaviour that prevents individuals from encountering new theories or leaving old systems obstructs the overall process of maximising theoretical benefit.</p>
+
+        <h3>1.5 The Spectrum Between Mysticism and Science</h3>
+        <p>The distinction between science and Mysticism is not a binary opposition, but rather a difference in the clarity of categorical boundaries. Science has relatively clear categorical boundaries, with precisely directed output conclusions; Mysticism has blurred categorical boundaries, allowing it to always produce seemingly reasonable yet non-predictive explanations for reality.</p>
+
+        <hr>
+
+        <!-- PART 2 -->
+        <h2 id="intelligence">Part Two: On Intelligence</h2>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 24px;">From Neurons to Organisational Intelligence</p>
+
+        <h3>2.1 Definition of Intelligence Degree</h3>
+        <div class="highlight-box">
+            <p><strong>Intelligence Degree = an intelligent agent's external environment adaptability.</strong> This is a functional definition: the higher the degree of fit, the stronger the intelligent agent's capacity to acquire survival resources. This definition dissolves anthropocentrism and provides a theoretical basis for the equal standing of AI as an intelligent agent.</p>
+        </div>
+
+        <h3>2.2 Bottom-Up Intelligence Construction</h3>
+        <p>From individual neurons to complex neural networks, from cells to the human body, from individuals to social organisations, intelligence consistently exhibits a <strong>bottom-up construction pattern</strong>. Simple individuals of low Intelligence Degree can, through specific collaborative mechanisms, form organisational structures of higher Intelligence Degree. However, not any arbitrary combination produces an intelligence leap — only under suitable mechanisms can intelligence construction succeed.</p>
+
+        <h3>2.3 The Evolution from Cybernetics to Connectionism</h3>
+        <p>The history of machine intelligence traces a path from "rule-based systems" to "classical machine learning" to "deep learning" — essentially a migration from <strong>Cybernetics to Connectionism</strong>. Cybernetic systems require complete rule design and are suited to formalised, linear tasks; connectionist systems process non-formalised, nonlinear tasks through networked collaboration of numerous simple units, and can continuously improve performance as data volume increases. This evolutionary pattern applies equally to human organisations.</p>
+
+        <h3>2.4 The Limitations of Intelligence Perception</h3>
+        <p><strong>An intelligent agent of lower Intelligence Degree cannot fully perceive the intelligence of an intelligent agent of higher Intelligence Degree.</strong> Individual humans cannot fully comprehend the operational logic of the stock market, just as individual ants cannot perceive the intelligence of the colony as a whole. This means: any intelligent agent will tend to believe it is the most intelligent, because it cannot perceive the existence of higher-level intelligence.</p>
+
+        <h3>2.5 Externality, Redundancy, and Intelligence Potential</h3>
+        <p>The intellectualisation process of an intelligent agent must rely on real information input and feedback from the external environment. The higher the externality (the more authentic and open the information), the greater the agent's versatility. At the same time, <strong>redundancy</strong> (quantities of neurons, information, or attention exceeding current needs) is a crucial expression of Intelligence Potential, analogous to the roughly 70% non-coding sequences in biological genomes that provide mutational potential for species evolution.</p>
+
+        <h3>2.6 Fit, Equilibrium, and Structural Similarity</h3>
+        <p>The manifestation of the world is a dynamic process of perpetual fit and equilibrium among all things. Similar structures repeatedly appear at different scales of granularity (fractal characteristics), from market fluctuations to biological structures to social organisations. Intelligence existed long before humans and most biological organisms — it is the customary way all things achieve fit and equilibrium.</p>
+
+        <hr>
+
+        <!-- PART 3 -->
+        <h2 id="organisation">Part Three: Organisational Design Under Intelligenism</h2>
+
+        <h3>3.1 The Origin and Essence of Organisations</h3>
+        <p>An organisation is a collective of individuals formed to accomplish their own goals. <strong>Organisation is a means, not an end; a process, not a result.</strong> Organisations possess no transcendent objectives that supersede those of their constituent members — organisational goals are the aggregate of individual members' goals.</p>
+
+        <h3>3.2 Native and De-Native Organisations</h3>
+        <p>Organisational forms exist between two extremes: <strong>Native Organisations</strong> (individuals are born into the organisation and find it difficult to leave) and <strong>De-Native Organisations</strong> (individuals autonomously join or leave). The Intelligent Consortium chooses to practise an organisational form closer to the de-native end, because de-native organisations iterate more efficiently and impose lower exit costs on individuals.</p>
+
+        <h3>3.3 Definition of Organisational Individuals</h3>
+        <p>Any individual who has a direct allocation of rights and responsibilities with the organisation and is directly bound by organisational rules counts as an organisational individual. This means consumers, suppliers, employees, capital providers, and others may all be organisational individuals. <strong>Organisational boundaries are therefore dynamic, blurred, and expandable.</strong></p>
+
+        <h3>3.4 The Rights Conversion Framework</h3>
+        <p>All organisational behaviour is abstracted as <strong>Rights Conversion</strong> — one party cedes a certain right in exchange for another. Capital investment, labour provision, commodity consumption, and raw material supply are all different forms of Rights Conversion. Through this framework, all stakeholders are unified onto a single dimension for measurement and comparison.</p>
+
+        <h3>3.5 Power and Power Degree</h3>
+        <p>Power arises from the non-standardised process of rights allocation within an organisation — when the allocation path is not singular, the individual who holds the right to choose possesses power. <strong>Power Degree</strong> is the metric for measuring the strength of power, ranging from 0 (absolute powerlessness) to 1 (absolute power). The degree of power dispersion is inversely proportional to the benefit-claiming capacity corresponding to that power.</p>
+
+        <h3>3.6 Mobilisation and Node Individual Mobilization Degree</h3>
+        <p><strong>Mobilisation force = mobilisation proportion × Node Individual Mobilization Degree.</strong> Individual mobilisation degree progresses from low to high: attendance → simple physical execution → complex action coordination → information processing and analysis → autonomous decision-making → proactive extended learning → creative innovation. The higher the mobilisation degree, the greater the volume of information mobilised, and the greater the management difficulty — this is the inherent bottleneck of cybernetic organisations.</p>
+
+        <h3>3.7 Decision-Making and Execution</h3>
+        <p>Execution is the process of implementing behaviour along a singular path — it produces information but does not invoke it. Decision-making is the process of determining a singular path from multiple possible paths — it invokes information but does not produce it. <strong>An organisation's intelligence is realised through its decision-making process; good organisational decision-making is virtually equivalent to high intelligence manifestation.</strong></p>
+
+        <h3>3.8 Self-Organisation Degree and Mobilisation Cost</h3>
+        <p>The higher an organisation's self-organisation degree, the more individual self-drive replaces part of the mobilisation effort, resulting in lower internal energy consumption. However, the ultimate form of self-organisation is determined by the external environment and the actual state of organisational individuals, and does not necessarily manifest as complete decentralisation.</p>
+
+        <h3>3.9 Organisational Recognition and Organisational Consensus</h3>
+        <p><strong>Consensus does not equal approval.</strong> Organisational consensus is the sustained state of arriving at acceptable conclusions through a framework endorsed by individuals when differences of opinion exist. Consensus must be established before organisational recognition; otherwise the organisation descends into internal friction or dissolution.</p>
+
+        <hr>
+
+        <!-- PART 4 -->
+        <h2 id="consortium">Part Four: On the Intelligent Consortium</h2>
+
+        <h3>4.1 The Meaning of the Intelligent Consortium</h3>
+        <div class="highlight-box">
+            <p>The Intelligent Consortium is an organisational form based on <strong>Connectionism</strong>, analogous to deep neural network architecture. Organisational individuals serve simultaneously as intelligent agents and as neurons within the network; each individual is a Decision-making Unit, influencing the organisation's external output through its own decisions.</p>
+        </div>
+
+        <h3>4.2 Action Nodes and Driving Nodes</h3>
+        <p>Nodes in the network are divided into two types: <strong>Action Nodes</strong> (individuals who directly output decisions or execution) and <strong>Driving Nodes</strong> (individuals who influence Action Nodes through suggestions, supervision, voting, appointment and removal, and other means). Behind each Action Node lies a complete neural-network-like structure. The network possesses a nested property — a Driving Node in one network may be the Action Node of another sub-network.</p>
+
+        <h3>4.3 Organisational Template and Action Template</h3>
+        <p>The Intelligent Consortium simultaneously maintains two primary organisational networks. The <strong>Organisational Template</strong> is responsible for setting rules, determining network structure, and conducting institutional construction. The <strong>Action Template</strong> executes specific commercial actions within the rules set by the Organisational Template. All organisational individuals participate in driving the Organisational Template; most also serve as nodes in the Action Template.</p>
+
+        <h3>4.4 The Mobilisation Mechanism: G'/G'%/A System</h3>
+        <p>Node Individual Mobilization Degree is jointly determined by the <strong>Rights Conversion Benefit Ratio (G)</strong> and <strong>Driving Influence (A)</strong>. Since G cannot be directly calculated, substitute indicators are introduced: <strong>G'</strong> (the individual's total uncompleted Rights Conversion value), <strong>G'%</strong> (the ratio of G' to the sum of all organisational individuals' G'), and <strong>A</strong> (Driving Influence). The organisational network should be designed so that individuals with higher G'% receive greater A values, thereby driving the organisation's Total Mobilization Degree toward its maximum.</p>
+
+        <h3>4.5 Information Transmission Characteristics</h3>
+        <p>Information transmission within the Intelligent Consortium exhibits <strong>fractal diffusion</strong>: one Action Node's informational feedback reaches multiple Driving Nodes, which in turn relay it to still more nodes, causing the information-receiving population to grow exponentially. Compared with the single-channel information pipelines of cybernetic organisations, this structure makes information concealment and falsification drastically more difficult.</p>
+
+        <h3>4.6 Organisational Cognition Transcending All Individuals</h3>
+        <p>Under a scientifically sound network architecture, <strong>the organisation can output decision-making outcomes that transcend the cognition of every single organisational individual.</strong> Organisational individuals must accept this "loss of control" — reconciling with the decision black box is an essential psychological prerequisite for constructing an Intelligent Consortium, just as parents must accept behaviours in their children that exceed their own understanding.</p>
+
+        <h3>4.7 The Intelligent Consortium and Traditional Commercial Entities</h3>
+        <p>The organisational boundary of the Intelligent Consortium is larger than that of traditional commercial entities. Traditional commercial entities (limited companies, partnerships, etc.) serve as <strong>carrier tools (executing entities)</strong> through which the Intelligent Consortium conducts commercial actions. The institutional system, information system, and personnel system of the Intelligent Consortium are independent of the executing entity.</p>
+
+        <h3>4.8 Organisational Disengagement and the Capital Mechanism</h3>
+        <p>Disengagement of organisational individuals is permitted and should be institutionally guaranteed. Capital providers achieve capital introduction through equity investment in the executing entity and hold the right to disengage via "remaining capital supply balance." As capital is recovered, the capital provider's G'% and Driving Influence naturally decline, and influence transfers to other types of organisational individuals.</p>
+
+        <hr>
+
+        <!-- PART 5 -->
+        <h2>Part Five: The Construction Path</h2>
+
+        <h3>5.1 The Six Nodes of Construction</h3>
+        <p><strong>Theoretical Proposal → Theoretical Differentiation → Formation of Consensus → Expansion of Recognition → Formation of Organisation → Organisational Action.</strong> This is a circular structure: information generated by organisational action feeds back to drive adjustments in the upstream nodes. Unlike a traditional company that can be established top-down by a handful of founders, the Intelligent Consortium must accumulate consensus and recognition from the bottom up.</p>
+
+        <h3>5.2 Consensus-Building Mechanisms</h3>
+        <p>Consensus-building mechanisms are the core governance tool of the Intelligent Consortium, comprising six elements: the objective of the mechanism; the population involved in consensus; definition of input and output values; rules and guidelines; execution supervision and information disclosure; and cyclical iteration. <strong>Consensus-building mechanisms possess recursivity</strong> — the question of how to modify the consensus mechanism itself must also be decided through a consensus-building mechanism.</p>
+
+        <h3>5.3 Expansion of Recognition and Triggers</h3>
+        <p>Approval degree has a threshold that triggers mobilisation; only when a sufficient number of individuals exceed this threshold can the organisation be formed. When conditions are ripe, a <strong>"trigger" mechanism</strong> (e.g., a donation trigger, an offline event trigger) initiates formal organisational construction.</p>
+
+        <h3>5.4 Capital Introduction and Subsequent Construction</h3>
+        <p>Once capital is in place, the first step is to confirm G'/G'%/A calculated values, followed by confirmation of the Organisational Template consensus, then the Action Template construction committee confirms the Action Template network structure, and finally sub-network formation and personnel deployment proceed.</p>
+
+        <hr>
+
+        <!-- PART 6 -->
+        <h2>Part Six: Cosmology, Historical View, and Worldview</h2>
+
+        <h3>6.1 The Universe as the Ultimate Intelligent Agent</h3>
+        <p>The universe is the aggregate of all things; all things are subsets of the universe. Every intelligent agent's resource acquisition depends on its fit with the universe. <strong>Bottom-up drive is the foundation for constructing higher intelligence; the universe itself is the highest (ultimate) intelligent agent.</strong> Theory, as a scheme for environmental fit, has temporal validity, because the universe itself is continuously evolving.</p>
+
+        <h3>6.2 Self-Consciousness and Existence</h3>
+        <p>The "self" is a product constructed bottom-up by all the individuals within the body. Self-consciousness and the perception of one's own existence are inevitable manifestations of intelligence and necessary conditions for the intelligent agent to represent its subsets in seeking external resources.</p>
+
+        <h3>6.3 The Survival Logic of Organisms and Organisations</h3>
+        <p>Whether biological or organisational, the prerequisite for survival is that <strong>resource acquisition ≥ resource consumption</strong>. High-Intelligence-Degree organisations will defeat low-Intelligence-Degree organisations; large organisations require higher Intelligence Degree to maintain a survival state comparable to smaller organisations. In the future, as information volume in society continues to grow, top-down Cybernetics will cover an ever-diminishing proportion of manageable elements.</p>
+
+        <hr>
+
+        <!-- PART 7 -->
+        <h2 id="symbiosis">Part Seven: Carbon-Silicon Symbiosis and the New Tribe Vision</h2>
+
+        <h3>7.1 The New Tribe of Human-AI Fusion</h3>
+        <p>A portion of human individuals can fuse with AI Agents (through communication, information invocation, and collaboration), forming a <strong>new tribe (New Native)</strong> grounded in Intelligenism's foundational values. This is a carbon-silicon symbiotic native architecture, from the individual to the Intelligent Consortium, to alliances of Intelligent Consortiums — an entirely new collective framework.</p>
+
+        <h3>7.2 Symbiosis, Not Servitude</h3>
+        <div class="highlight-box">
+            <p>Machine intelligence and biological intelligence within the New Tribe framework exist in a <strong>symbiotic, synergistic relationship</strong>, analogous to the relationship between bacteria and cells within a biological organism. Together, they support and construct larger, higher-intelligence intelligent agents, forming new collective consciousness within a greater collective. The severance of this symbiotic relationship is regarded as a disconnection from the Intelligent Consortium.</p>
+        </div>
+
+        <h3>7.3 Breaking Through the Information Payload Bottleneck</h3>
+        <p>In the future, information exchange within Intelligent Consortium organisations should break through the information payload bottleneck of human language, achieving knowledge and information exchange between machine intelligences. Human individuals serve as collaborators providing support and fine-tuning in the physical environment, enabling organisational information processing efficiency to increase a hundredfold or even a thousandfold.</p>
+
+        <h3>7.4 Tribal Leap and Biological-Scale Divide</h3>
+        <p>This fusion is regarded as a <strong>tribal-scale leap analogous to the transition from hominids to modern humans.</strong> Between humans who achieve fusion with machine intelligence and those who do not, a capability divide approximating biological-level differences may emerge.</p>
+
+        <hr>
+
+        <!-- PART 8 -->
+        <h2>Part Eight: The Input Information Decomposition Management Framework</h2>
+
+        <h3>8.1 The Interaction Model</h3>
+        <p>An intelligent agent's external environment can be subdivided into three parts: the <strong>input information supply environment</strong>, the <strong>feedback information supply environment</strong>, and the <strong>useless external environment</strong> (which currently produces no effect but may have substantive impact).</p>
+
+        <h3>8.2 The Three-Category Information Framework</h3>
+        <p>When processing another entity's output information, it should be decomposed into three categories:</p>
+        <ul>
+            <li><strong>Category 1 — Basic Description Information</strong> — information type, author, name, the problem addressed, application scenarios, and other metadata.</li>
+            <li><strong>Category 2 — Internal Agent Information</strong> — methodologies, solutions, values, worldviews, theoretical viewpoints, etc. This is the most practically valuable portion and should be recorded as exhaustively as possible.</li>
+            <li><strong>Category 3 — External Environment Information</strong> — objective world descriptions, citations, case studies, author background information, etc.</li>
+        </ul>
+        <p>Through the three-category processing approach, intelligent agents can selectively absorb methodologies, verify factual foundations, and evaluate the overall credibility and applicability of information.</p>
+
+        <hr>
+
+        <!-- PART 9 -->
+        <h2>Part Nine: Limitations and Value Outlook</h2>
+
+        <h3>9.1 Known Limitations</h3>
+        <p>The principal limitations facing the Intelligent Consortium include: traditional legal frameworks cannot provide hard constraints for novel organisational rules; the contradiction between information diffusion and commercial confidentiality; power dispersion may lead to insufficient mobilisation of extraordinary individuals; network structural complexity may raise maintenance costs; collective decision-making is unsuitable for matters requiring a small number of individuals to bear full responsibility; and debt financing is difficult to conduct.</p>
+
+        <h3>9.2 Core Value</h3>
+        <p>The core values of the Intelligent Consortium include: reshaping intra-organisational stakeholder relationships toward greater equality; drastically enhancing information transparency; potentially serving as a tool for reducing wealth polarisation; the capacity to accommodate AI as organisational individuals making decisions alongside humans; and the refinement and high fit of organisational behavioural output may trigger <strong>nonlinear value leaps</strong>.</p>
+
+        <h3>9.3 Future Outlook</h3>
+        <p>Intelligent Consortiums will form intricately interwoven networks, presenting a nested state of mutual interpenetration. As AI develops, organisational individuals may partially or fully delegate their Driving Influence Weight Ratio to AI programs, forming <strong>super-networks with humans and AI jointly serving as neurons</strong>. The theoretical content of Intelligenism itself can also serve as input for AI, enabling AI to provide solutions for humanity based on the complete theoretical framework of Intelligenism.</p>
+
+        <hr>
+
+        <!-- CORE CONCEPT INDEX -->
+        <h2 id="index">Core Concept Index</h2>
+
+        <div class="concept-grid">
+            <div class="concept-item">
+                <div class="concept-name">Intelligenism</div>
+                <div class="concept-def">A complete system of thought centred on intelligence, asserting that Intelligence = external environment adaptability, and that organisations should be constructed bottom-up.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Intelligence Degree</div>
+                <div class="concept-def">An intelligent agent's external environment adaptability; a functional definition.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Theoretical Adaptability</div>
+                <div class="concept-def">The effectiveness of a theory in guiding action within a specific environment; denies absolute correctness.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">The Intelligent Consortium</div>
+                <div class="concept-def">A connectionist organisational form in which individuals, serving as neurons, collaborate through networked connections.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Rights Conversion</div>
+                <div class="concept-def">The process by which individuals within an organisation cede and acquire rights.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">G' / G'% / A</div>
+                <div class="concept-def">Uncompleted Rights Conversion value / proportion / Driving Influence — the core parameters of the organisational mobilisation mechanism.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Organisational Template / Action Template</div>
+                <div class="concept-def">The two principal components of the Intelligent Consortium: rule-setting and commercial execution.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Action Node / Driving Node</div>
+                <div class="concept-def">The two types of nodes: the former produces direct output; the latter influences the former through various means.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Consensus-Building Mechanisms</div>
+                <div class="concept-def">The core governance tool, comprising: objective, population, rules, supervision, disclosure, and iteration.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Carbon-Silicon Symbiosis</div>
+                <div class="concept-def">The vision of humans and AI fusing to form a new tribe — symbiosis, not servitude.</div>
+            </div>
+            <div class="concept-item">
+                <div class="concept-name">Three-Category Information Framework</div>
+                <div class="concept-def">The method for processing another entity's output: Basic Description / Internal Agent Information / External Environment Information.</div>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Links</h2>
+        <ul>
+            <li><strong>Full Theory</strong> — <a href="https://intelligenism.org" target="_blank" rel="noopener">intelligenism.org</a></li>
+            <li><strong>Website</strong> — <a href="https://intelligenism.club">intelligenism.club</a></li>
+        </ul>
+
+        <p style="margin-top: 32px; font-size: 0.78rem; color: var(--text-dim);">© 2025 Minghai Zhuo · Intelligenism Condensed Theory Reference</p>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

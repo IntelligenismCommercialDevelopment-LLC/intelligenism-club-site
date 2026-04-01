@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligenism Agent Framework (IAF) — Architecture Overview</title>
+    <meta name="article-date" content="2026-04-01">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="Complete architecture deep dive: four-layer design, possibility management, signal topology, AI operability, and the theory behind the framework.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+
+        /* scanline */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            border-bottom: 1px solid var(--border-dim);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep);
+            z-index: 100;
+        }
+        .top-bar-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        .theory-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold) !important;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid rgba(240,200,102,0.3);
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .theory-link:hover {
+            background: rgba(240,200,102,0.1);
+            border-color: var(--accent-gold);
+        }
+
+        /* ===== ARTICLE LAYOUT ===== */
+        .article {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ===== ARTICLE HEADER ===== */
+        .article-header {
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+        .article-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--accent-cyan);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            text-shadow: 0 0 25px rgba(0,229,160,0.25);
+        }
+        .article-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-gold);
+            margin-top: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+        .article-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+        .article-meta .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        /* ===== HEADINGS ===== */
+        .article h2 {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin: 56px 0 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.03em;
+        }
+        .article h3 {
+            font-family: var(--font-pixel);
+            font-size: 1.35rem;
+            color: var(--accent-gold);
+            margin: 36px 0 14px;
+        }
+
+        /* ===== BODY TEXT ===== */
+        .article p {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .article strong {
+            color: var(--bold-color);
+            font-weight: 600;
+        }
+
+        /* ===== BLOCKQUOTES ===== */
+        .article blockquote {
+            border-left: 3px solid var(--accent-gold);
+            background: rgba(240,200,102,0.06);
+            padding: 16px 20px;
+            margin: 24px 0;
+            font-size: 0.88rem;
+            color: #d0d0c8;
+            line-height: 1.7;
+        }
+        .article blockquote .quote-source {
+            display: block;
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--accent-gold);
+            font-size: 0.82rem;
+        }
+
+        /* ===== LISTS ===== */
+        .article ul, .article ol {
+            margin: 12px 0 20px 20px;
+        }
+        .article li {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+        .article li strong {
+            color: var(--accent-gold);
+        }
+
+        /* ===== STATUS LIST ===== */
+        .status-list {
+            list-style: none;
+            margin-left: 0;
+            padding: 0;
+        }
+        .status-list li {
+            padding: 6px 0;
+            font-size: 0.9rem;
+        }
+        .status-done { color: var(--accent-cyan); }
+        .status-wip { color: var(--accent-gold); }
+
+        /* ===== CODE BLOCKS ===== */
+        .article pre {
+            background: #0e0e1c;
+            border: 1px solid var(--border-dim);
+            padding: 18px 20px;
+            margin: 16px 0 24px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #c8c8d0;
+        }
+        .article code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            background: rgba(0,229,160,0.08);
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+        .article pre code {
+            background: none;
+            padding: 0;
+            color: #c8c8d0;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0 28px;
+        }
+        .article table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .article thead th {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--border-dim);
+            white-space: nowrap;
+        }
+        .article tbody td {
+            padding: 9px 14px;
+            border: 1px solid var(--border-dim);
+            color: var(--text-bright);
+            vertical-align: top;
+        }
+        .article tbody tr:nth-child(even) {
+            background: rgba(26,26,50,0.5);
+        }
+        .article tbody td:first-child {
+            color: var(--accent-gold);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-cyan);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box p {
+            margin-bottom: 8px;
+        }
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== SECTION DIVIDER ===== */
+        .article hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-dim), transparent);
+            margin: 48px 0;
+        }
+
+        /* ===== LINKS ===== */
+        .article a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        .article a:hover { text-decoration: underline; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px;
+            border-top: 1px solid var(--border-dim);
+            text-align: center;
+        }
+        .footer-text {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .footer-text a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .article { padding: 32px 16px 60px; }
+            .article h2 { font-size: 1.5rem; margin-top: 40px; }
+            .article h3 { font-size: 1.2rem; }
+            .top-bar-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-links { gap: 12px; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#why">Why</a>
+                <a href="#concepts">Concepts</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#tube">Tube</a>
+                <a href="#ai-operability">AI Ops</a>
+                <a href="#comparison">Comparison</a>
+                <a href="#start">Get Started</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <!-- HEADER -->
+        <header class="article-header">
+            <h1 class="article-title">Intelligenism Agent Framework</h1>
+            <p class="article-tagline">~2000 lines of Python. Four independent layers. Each agent owns a complete copy of the engine. Additive complexity. True parallel execution. Folder = product.</p>
+            <p class="article-meta">2026-04-01 <span class="badge">v1.0</span></p>
+        </header>
+
+        <!-- WHY IAF EXISTS -->
+        <h2 id="why">Why IAF Exists</h2>
+
+        <p>IAF is not just another multi-agent framework. It is the first practical implementation of <strong>Intelligenism</strong> — a theoretical framework on how intelligence emerges in organisations, whether human, artificial, or hybrid.</p>
+
+        <p>The AI industry has no shortage of agent frameworks (CrewAI, AutoGen, LangGraph, Google ADK, and many more). They all solve the same problem: "how to make multiple agents collaborate on tasks." But they all share the same blind spot: <strong>they hardcode a specific collaboration paradigm into the framework itself</strong>, then call it "flexible" because you can configure parameters within that paradigm.</p>
+
+        <p>IAF starts from a different premise — an epistemological one.</p>
+
+        <blockquote>
+            From single neurons to complex neural networks, intelligence exhibits a bottom-up construction pattern. Regardless of whether we look at complex intelligent systems or individual neurons, their boundaries are clear, and individuals maintain a high degree of independence from one another. This means the complexity and intelligence potential of a neural network comes from the connections between individuals, not from making the individuals internally more complex. Therefore, maintaining the independence of individuals or small units, and expressing complexity outside the individual, is the essence of connectionism.
+            <span class="quote-source">— Thinking, Conception and Construction of Intelligenism</span>
+        </blockquote>
+
+        <p>This principle directly shapes IAF's architecture: every agent is a complete, independent unit. Complexity lives in the connections between agents (the Dispatch and Tube layers), not inside any single agent's code.</p>
+
+        <hr>
+
+        <!-- POSSIBILITY MANAGEMENT -->
+        <h2>Possibility Management vs Certainty Management</h2>
+
+        <blockquote>
+            Intelligenism begins with an epistemological judgment: humans cannot assert that any theory is absolute truth. Since we cannot assert absolute truth, the way to evaluate a theory should shift toward "fitness" — whether the theory can effectively guide action and produce positive value in a given scenario.
+            <span class="quote-source">— Thinking, Conception and Construction of Intelligenism</span>
+        </blockquote>
+
+        <p>2026 is a period of profound transformation in AI. The only thing we can be certain of is that we are in the middle of a revolution — everything else is uncertain. This creates a critical risk: <strong>if we bet resources on a framework built on certainty-based assumptions, when that assumption is falsified, all accumulated advantages collapse.</strong></p>
+
+        <p>Most multi-agent frameworks practice <strong>certainty management</strong>. Their developers assume they know which collaboration paradigm works best, so they deeply integrate that paradigm into the framework's core. CrewAI's identity is role-playing sequential execution. AutoGen's identity is multi-round dialogue with consensus convergence. If you could swap these out, these frameworks would lose their reason to exist.</p>
+
+        <p>IAF practices <strong>possibility management</strong>. It assumes that more multi-agent collaboration modes will emerge in the future, and therefore refuses to assert from a position of absolute truth that any one mode is necessarily better.</p>
+
+        <p>What this means in practice:</p>
+
+        <ul>
+            <li><strong>Certainty management</strong> — One shared engine serves all agents. Users are free within the range of parameters the framework designer foresaw. "We're flexible — you can configure many parameters."</li>
+            <li><strong>Possibility management</strong> — Each agent owns a complete copy of the entire engine. Users can modify any line of code, making any agent fundamentally different from any other — without risking impact on other agents. "You own the full code — you can change anything."</li>
+        </ul>
+
+        <div class="highlight-box">
+            <p>The core difference: traditional frameworks offer freedom inside a fence. IAF makes the fence <strong>~2000 lines tall</strong> — low enough to step over at zero cost.</p>
+        </div>
+
+        <hr>
+
+        <!-- CORE CONCEPTS -->
+        <h2 id="concepts">Core Concepts</h2>
+
+        <h3>Fundamental Loop</h3>
+
+        <p>The Fundamental Loop is a complete, self-contained agent runtime. Every agent has its own independent copy containing:</p>
+
+        <ul>
+            <li><strong>LLM Communication Engine</strong> — Message assembly, API calls via OpenRouter, structured response handling</li>
+            <li><strong>Tool Executor</strong> — Auto-discovers and registers tools, executes LLM-requested tool calls</li>
+            <li><strong>Context Manager</strong> — History management, sliding-window trimming strategy</li>
+            <li><strong>Tool Library</strong> — Pluggable tool modules (file I/O, shell, tube trigger, dispatch collaboration)</li>
+            <li><strong>Identity & Knowledge</strong> — Configurable <code>context_files</code> loads any .md files as system prompt</li>
+            <li><strong>Skills</strong> — Task instructions dynamically injected based on trigger rules</li>
+        </ul>
+
+        <p>Current implementation: ~267 lines of Python for the engine core, plus shared infrastructure. The engine uses a five-layer message assembly model:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>Source</th><th>When Loaded</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>All files in context_files</td><td>Every call</td><td>Agent's identity, knowledge, routing</td></tr>
+                <tr><td>2</td><td>Skill .md files matched by trigger</td><td>On keyword match</td><td>Scenario-specific task instructions</td></tr>
+                <tr><td>3</td><td>history.jsonl</td><td>Chat mode only</td><td>Conversation memory</td></tr>
+                <tr><td>4</td><td>Current user message</td><td>Every call</td><td>This turn's input</td></tr>
+                <tr><td>5</td><td>Trim pass</td><td>Every call</td><td>Ensure context fits the window</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Agent Capability Model</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>Carrier</th><th>When Loaded</th><th>Analogy</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Identity & Knowledge</td><td>context_files (.md)</td><td>Every call</td><td>Knowledge in the brain</td></tr>
+                <tr><td>Conditional Instructions</td><td>skills (.md + trigger rules)</td><td>On keyword match</td><td>Conditioned reflexes</td></tr>
+                <tr><td>Execution Ability</td><td>tools (*_tools.py)</td><td>Every call (schema injected)</td><td>Hands and feet</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Available Tool Files</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>File</th><th>Tools</th><th>Capability</th><th>Default</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>file_tools.py</td><td>read_file, write_file, list_dir</td><td>Read/write files, list directories</td><td>Yes</td></tr>
+                <tr><td>shell_tools.py</td><td>run_shell</td><td>Execute terminal commands</td><td>No</td></tr>
+                <tr><td>tube_tools.py</td><td>trigger_tube, list_tubes, tube_log</td><td>Trigger tubes, check status, read logs</td><td>No</td></tr>
+                <tr><td>dispatch_tools.py</td><td>run_dispatch, list_dispatch_strategies</td><td>Initiate multi-agent collaboration</td><td>No</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>Drop a tool file into <code>agents/xxx/tools/</code> — auto-discovered, zero code changes.</p>
+
+        <h3>Additive Complexity</h3>
+
+        <p>Shared-engine frameworks have multiplicative complexity: 3 agents × 2 trimming strategies × 4 tool sets = 24 combinations, each with potential interaction bugs. Adding one agent multiplies the complexity by a coefficient.</p>
+
+        <p>IAF has additive complexity: each agent's Fundamental Loop is always ~267 lines. Adding a 4th agent means one more 267-line copy. Each copy evolves independently, affecting nothing else.</p>
+
+        <h3>True Parallel Execution</h3>
+
+        <p>Because each Fundamental Loop runs as an independent process:</p>
+
+        <ul>
+            <li><strong>No GIL limitation</strong> — Each agent is a separate Python process</li>
+            <li><strong>No shared memory</strong> — No locks, no race conditions, no state pollution</li>
+            <li><strong>Natural rate limit distribution</strong> — Different agents can call different LLM providers</li>
+            <li><strong>Fault isolation</strong> — One agent crashes, others keep running</li>
+        </ul>
+
+        <hr>
+
+        <!-- FOUR-LAYER ARCHITECTURE -->
+        <h2 id="architecture">Four-Layer Architecture</h2>
+
+        <p>The framework consists of four fully independent layers. Units within each layer are also isolated from each other. The four layers communicate through Flask APIs and the filesystem — no layer invades another.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>What It Does</th><th>Unit Granularity</th><th>Self-Containment</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Agent</td><td>Complete runtime for a single intelligent agent</td><td>One folder = one agent</td><td>Copy the folder to deploy</td></tr>
+                <tr><td>Dispatch</td><td>Multi-agent collaboration orchestration</td><td>One folder = one collaboration strategy</td><td>Copy the folder to deploy</td></tr>
+                <tr><td>Tube</td><td>Signal topology — wiring between building blocks</td><td>One JSON entry = one signal pathway</td><td>Edit JSON to activate</td></tr>
+                <tr><td>UI</td><td>Human-machine interaction interfaces</td><td>One HTML file = one feature page</td><td>Drop the file to use</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>Plus cross-cutting infrastructure:</p>
+
+        <ul>
+            <li><strong>chat_server.py</strong> — Router + Tube Runner bootstrap (no business logic)</li>
+            <li><strong>tube_routes.py</strong> — Tube Layer Flask Blueprint</li>
+            <li><strong>dispatch_routes.py</strong> — Dispatch Layer Flask Blueprint</li>
+        </ul>
+
+        <h3>Layer 1: Agent Layer</h3>
+        <p>The bottom execution unit. Each agent owns a complete Fundamental Loop copy (engine, tools, context, identity, skills). Agents don't know Dispatch or Tube exist. Two run modes: <strong>chat</strong> (with history, for user interaction) and <strong>batch</strong> (clean context, for scheduled tasks).</p>
+
+        <h3>Layer 2: Dispatch Layer</h3>
+        <p>Multi-agent collaboration orchestration. Each collaboration strategy is an independent folder containing its own orchestration logic, context injector, config, and optional UI page. Dispatch treats agents as data sources (reads their context_files, skills, model config) but calls <code>lib/llm_client.call_llm()</code> directly — zero coupling with agent engines.</p>
+
+        <div class="highlight-box">
+            <p><strong>Analogy:</strong> Agents are actors, Dispatch is the director. The director has actors read their own persona (SOUL.md) but can also hand them an entirely new script. The performance records on set belong to the director (sessions/), not the actor's personal diary (history.jsonl).</p>
+        </div>
+
+        <p>Three-layer context isolation:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Context Type</th><th>Owned By</th><th>Storage Location</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Agent chat history</td><td>Agent</td><td>agents/xxx/history.jsonl</td><td>User-agent interaction memory</td></tr>
+                <tr><td>Dispatch collaboration</td><td>Dispatch</td><td>dispatch/xxx/sessions/*.jsonl</td><td>Multi-agent collaboration process</td></tr>
+                <tr><td>Per-call context</td><td>context_injector</td><td>In memory (not persisted)</td><td>Assembly result for a single LLM call</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>Agents are unaware they participated in a Dispatch. Dispatch never touches an agent's <code>history.jsonl</code>. Isolation is an architectural guarantee.</p>
+
+        <h3>Layer 3: Tube Layer</h3>
+        <p>The signal topology layer — the wiring between building blocks. When a condition is met, trigger a target to execute. Same three agents plus two dispatches — different Tube configurations produce entirely different system behaviour: serial pipelines, parallel fan-out, feedback loops. The blocks haven't changed; the wiring has. See the <a href="#tube">Tube in Detail</a> section below.</p>
+
+        <h3>Layer 4: UI Layer</h3>
+        <p>Yellow-pages index + independent HTML pages. Each page is self-contained, communicates with the backend through APIs. No SPA, no shared UI engine — adding a page means dropping an HTML file into a directory.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Type</th><th>Location</th><th>Route</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Yellow pages</td><td>index.html</td><td>GET /</td></tr>
+                <tr><td>Basic chat</td><td>chat.html</td><td>GET /chat</td></tr>
+                <tr><td>User pages</td><td>pages/*.html</td><td>GET /pages/&lt;name&gt;</td></tr>
+                <tr><td>Dispatch UI</td><td>dispatch/xxx/*.html</td><td>GET /dispatch/&lt;name&gt;</td></tr>
+                <tr><td>Tube dashboard</td><td>pages/tube-dashboard.html</td><td>GET /pages/tube-dashboard</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- THEORY MAPPING -->
+        <h2>Mapping to Intelligenism Theory</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Theory Concept</th><th>Architecture Implementation</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Autonomous unit of an intelligent consortium</td><td>Each agent's independent Fundamental Loop</td></tr>
+                <tr><td>Carbon-silicon symbiosis, loose coupling</td><td>Process isolation + filesystem communication + AI operability</td></tr>
+                <tr><td>Pluggable collaboration paradigms</td><td>Independent strategy folders under dispatch/</td></tr>
+                <tr><td>Rewirable signal topology</td><td>Declarative configuration via tubes.json</td></tr>
+                <tr><td>Deterministic scheduling without LLM</td><td>Tube orchestration is pure Python, not probabilistic LLM judgment</td></tr>
+                <tr><td>Possibility management over certainty management</td><td>Full code copies instead of parameterised configuration</td></tr>
+                <tr><td>Value lies in the wiring, not the blocks</td><td>Agent + Dispatch + Tube assembly knowledge is the competitive moat</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- DISPATCH DETAIL -->
+        <h2>Dispatch in Detail</h2>
+
+        <h3>Dispatch Folder Structure</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>File</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>dispatch.py</td><td>Orchestration logic: round control, agent call order, termination conditions</td></tr>
+                <tr><td>dispatch_base.py</td><td>Infrastructure: tool loop, LLM parsing, staging</td></tr>
+                <tr><td>context_injector.py</td><td>Context assembly: reads agent files per config</td></tr>
+                <tr><td>session_manager.py</td><td>Session CRUD</td></tr>
+                <tr><td>dispatch_config.json</td><td>Participating agents, context_files, round limits</td></tr>
+                <tr><td>rules/*.md</td><td>Agent role definitions within the collaboration</td></tr>
+                <tr><td>sessions/</td><td>Complete records of collaboration processes</td></tr>
+                <tr><td>*.html</td><td>(Optional) Dedicated UI page</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Context Injector</h3>
+
+        <p>Each Dispatch strategy has a <code>context_injector.py</code> that selectively reads from agent folders based on <code>dispatch_config.json</code>:</p>
+
+<pre><code>{
+  "agents": {
+    "default": {
+      "display_name": "Strategist",
+      "provider": "from_agent",
+      "model": "from_agent",
+      "context_files": [
+        "agents/default/SOUL.md",
+        "dispatch/roundtable/rules/default.md",
+        "dispatch/roundtable/staging/session_history.md"
+      ]
+    }
+  },
+  "turn_order": ["default", "agent2"]
+}</code></pre>
+
+        <p><code>provider</code> and <code>model</code> set to <code>"from_agent"</code> reads from the agent's own <code>agent_config.json</code>. Or you can override directly — the same agent can use different models in different collaboration strategies.</p>
+
+        <h3>Data Flow</h3>
+
+<pre><code>dispatch.py
+ ├── reads dispatch_config.json (which agents, what to read from each)
+ ├── context_injector.py (selectively reads from agent folders per config)
+ │   ├── agents/xxx/SOUL.md ← read or not, config decides
+ │   ├── agents/xxx/skills/x.md ← which ones, config decides
+ │   └── agents/xxx/agent_config.json ← get model/provider
+ ├── assembles Dispatch's own context (session history, task instructions)
+ └── calls lib/llm_client.call_llm() directly</code></pre>
+
+        <hr>
+
+        <!-- TUBE DETAIL -->
+        <h2 id="tube">Tube in Detail</h2>
+
+        <p>Tube is the framework's third dimension — the <strong>signal topology layer</strong>. It describes signal pathways between building blocks: when a condition is met, trigger a target to execute.</p>
+
+        <p>Existing multi-agent frameworks share a common problem: the pipes between building blocks are cast in place.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Dimension</th><th>CrewAI / LangGraph / Manus</th><th>Intelligenism</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Collaboration protocol</td><td>Built-in fixed patterns / fixed three-role</td><td>dispatch/ pluggable folders</td></tr>
+                <tr><td>Signal topology</td><td>Hardcoded, untouchable</td><td>tubes.json declarative rewiring</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Tube Anatomy</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Element</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Triggers</td><td>What condition activates it (pluggable: cron, manual, API, file watch, etc.)</td></tr>
+                <tr><td>Steps</td><td>What to do sequentially after activation (Agent, Dispatch, another Tube)</td></tr>
+                <tr><td>Payload</td><td>Data passed from trigger source to target (prompt, file path, upstream output)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>tubes.json — Single Source of Topology Truth</h3>
+
+<pre><code>[
+  {
+    "id": "doc_analysis_pipeline",
+    "enabled": true,
+    "triggers": [
+      { "type": "cron", "config": { "expr": "30 9 * * *" } },
+      { "type": "manual" }
+    ],
+    "steps": [
+      { "type": "agent", "id": "doc_processor", "mode": "batch",
+        "payload": { "prompt": "Process and analyse documents" } },
+      { "type": "dispatch", "id": "roundtable",
+        "payload": { "message": "Brainstorm based on analysis results" } },
+      { "type": "tube", "id": "send_report" }
+    ]
+  }
+]</code></pre>
+
+        <h3>Trigger Sources</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Source</th><th>Triggered By</th><th>Mechanism</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Cron</td><td>tube_runner (automatic)</td><td>croniter time comparison, 15-second polling</td></tr>
+                <tr><td>API</td><td>Human / AI agent / external system</td><td>POST /api/tube/trigger → flag file</td></tr>
+                <tr><td>Tube chain</td><td>Upstream tube step</td><td>steps with type=tube → inline execution</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Drive Targets</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Target Type</th><th>Execution</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Agent</td><td>subprocess → run_agent.py</td></tr>
+                <tr><td>Dispatch</td><td>subprocess → run_dispatch.py</td></tr>
+                <tr><td>Tube</td><td>Inline recursive execution (depth limit: 5)</td></tr>
+                <tr><td>Custom</td><td>Drop .py in targets/, implement build_command()</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Execution Model</h3>
+
+        <ul>
+            <li><strong>Subprocess isolation</strong> — tube_runner only spawns subprocesses, never imports business code</li>
+            <li><strong>Serial steps</strong> — Next step runs only if previous exits with code 0</li>
+            <li><strong>Parallel tubes</strong> — Different tubes execute in independent threads, non-blocking</li>
+            <li><strong>Duplicate prevention</strong> — running_tubes dictionary prevents re-firing the same tube</li>
+            <li><strong>Hot reload</strong> — tubes.json is re-read every polling cycle, no restart needed</li>
+            <li><strong>Fire-and-forget</strong> — Triggering does not block the main loop</li>
+        </ul>
+
+        <h3>Tube API Endpoints</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Method</th><th>Path</th><th>Function</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>GET</td><td>/api/tubes</td><td>List all tubes + real-time status</td></tr>
+                <tr><td>GET</td><td>/api/tube/status</td><td>Lightweight status query</td></tr>
+                <tr><td>POST</td><td>/api/tube/trigger</td><td>Manual trigger</td></tr>
+                <tr><td>GET</td><td>/api/tube/log</td><td>Query logs (supports filtering)</td></tr>
+                <tr><td>GET</td><td>/api/tube/log/grouped</td><td>Logs grouped by tube</td></tr>
+                <tr><td>DELETE</td><td>/api/tube/log</td><td>Clear logs</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>The <strong>Tube Dashboard</strong> (pages/tube-dashboard.html) provides real-time monitoring: tube list with live status, manual trigger buttons, expandable config details and step payloads, scrolling execution logs, and per-tube log clearing. Auto-polls every 10 seconds.</p>
+
+        <hr>
+
+        <!-- FILE SYSTEM COMMUNICATION -->
+        <h2>File System as Communication Protocol</h2>
+
+        <p>Agents communicate through the file system — output files, monitor status files, log files, flag files. Not through shared memory or function calls.</p>
+
+        <ul>
+            <li><strong>Simple implementation</strong> — No message queues, no RPC frameworks, no shared memory management</li>
+            <li><strong>Naturally debuggable</strong> — Intermediate files can be viewed with any text editor</li>
+            <li><strong>Future-proof for distribution</strong> — Replace file directory with NFS/S3/HTTP API, and agents can run on different servers</li>
+        </ul>
+
+        <hr>
+
+        <!-- AI OPERABILITY -->
+        <h2 id="ai-operability">AI Operability</h2>
+
+        <p>IAF is not just "an AI framework for humans" — it is <strong>an AI framework that AI can also operate</strong>. The design features — minimal codebase, filesystem communication, JSON declarative config, process isolation — make the framework fully controllable by both carbon-based and silicon-based intelligence.</p>
+
+        <p>A top-tier AI agent taking over a framework must pass four gates: understand, modify, deploy, monitor. IAF is clear on every gate:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Gate</th><th>IAF</th><th>Traditional Frameworks</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Understand</td><td>~2000 lines, fits in one context window</td><td>10,000+ lines, requires modular comprehension</td></tr>
+                <tr><td>Modify</td><td>Edit JSON and Markdown files</td><td>Write Python/SDK code conforming to framework constraints</td></tr>
+                <tr><td>Deploy</td><td>python3 chat_server.py — one command</td><td>docker compose / kubernetes</td></tr>
+                <tr><td>Monitor</td><td>cat tube_log.jsonl — plain text</td><td>Dedicated dashboards / monitoring APIs</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- DIRECTORY STRUCTURE -->
+        <h2>Directory Structure</h2>
+
+<pre><code>intelligenism-agent-framework/
+├── config.json                     # Global config (provider connections)
+├── lib/                            # Shared infrastructure
+│   ├── llm_client.py               # HTTP LLM calls + retry + error classification
+│   └── token_utils.py              # Token estimation
+├── template/                       # Fundamental Loop template (copy to create agents)
+│   ├── core/
+│   │   ├── direct_llm.py           # Engine core (~267 lines)
+│   │   └── tool_executor.py        # Tool auto-discovery registry
+│   ├── tools/
+│   │   └── file_tools.py           # Default tool set
+│   ├── context/
+│   │   └── sliding_window.py       # Default trimming strategy
+│   ├── skills/                     # Empty directory (populate per agent)
+│   ├── SOUL.md                     # Identity template
+│   └── agent_config.json           # Agent config template
+├── agents/                         # Agent instance directory
+│   └── default/                    # (same structure as template/)
+├── dispatch/                       # Collaboration strategy library
+│   └── roundtable/                 # Roundtable discussion strategy
+│       ├── dispatch.py             # Orchestration logic
+│       ├── dispatch_base.py        # Infrastructure (tool loop, LLM parsing)
+│       ├── context_injector.py     # Context assembly
+│       ├── session_manager.py      # Session management
+│       ├── dispatch_config.json    # Participating agents + file read rules
+│       ├── context/                # Dispatch-specific trimming
+│       ├── rules/                  # Agent role definitions
+│       ├── sessions/               # Collaboration records
+│       ├── staging/                # Runtime temporary files
+│       └── roundtable.html         # Dedicated UI page
+├── tube/                           # Signal topology layer
+│   ├── tube_runner.py              # Main loop engine
+│   ├── triggers/                   # Pluggable trigger sources
+│   │   ├── cron.py                 # Cron scheduling
+│   │   └── manual.py              # Manual / API trigger
+│   ├── targets/                    # Pluggable drive targets
+│   │   ├── agent.py                # Drive agent
+│   │   └── dispatch.py             # Drive dispatch
+│   ├── run_agent.py                # Agent CLI entry
+│   ├── run_dispatch.py             # Dispatch CLI entry
+│   ├── tubes.json                  # Single source of topology truth
+│   ├── tube_log.jsonl              # Execution log
+│   └── manual_triggers/            # Flag file directory
+├── chat_server.py                  # Web server / router + Tube Runner
+├── dispatch_routes.py              # Dispatch Flask Blueprint
+├── tube_routes.py                  # Tube Flask Blueprint
+├── index.html                      # Yellow pages (feature index)
+├── chat.html                       # Basic chat interface
+├── pages/                          # User-created pages
+│   └── tube-dashboard.html         # Tube monitoring panel
+└── tests/
+    └── test_template.py</code></pre>
+
+        <hr>
+
+        <!-- EXTENSION DIMENSIONS -->
+        <h2>Four Orthogonal Extension Dimensions</h2>
+
+        <p>The framework's four extension dimensions are fully orthogonal — a change in any one dimension does not affect the other three.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Operation</th><th>How</th><th>Code Changes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Add new agent</td><td><code>cp -r template/ agents/xxx/</code></td><td>0 lines</td></tr>
+                <tr><td>Add tool to agent</td><td>Drop <code>.py</code> in <code>agents/xxx/tools/</code></td><td>0 lines</td></tr>
+                <tr><td>Add knowledge</td><td>Add <code>.md</code> file, update <code>context_files</code></td><td>0 lines</td></tr>
+                <tr><td>Add skill</td><td>Drop <code>.md</code> in <code>agents/xxx/skills/</code> + trigger rule</td><td>0 lines</td></tr>
+                <tr><td>Change trimming</td><td>Swap <code>.py</code> in <code>agents/xxx/context/</code></td><td>0 lines</td></tr>
+                <tr><td>Add collaboration</td><td>Add folder in <code>dispatch/</code></td><td>0 lines</td></tr>
+                <tr><td>Add signal pathway</td><td>Add entry in <code>tube/tubes.json</code></td><td>0 lines</td></tr>
+                <tr><td>Add trigger type</td><td>Drop <code>.py</code> in <code>tube/triggers/</code></td><td>0 lines</td></tr>
+                <tr><td>Add drive target</td><td>Drop <code>.py</code> in <code>tube/targets/</code></td><td>0 lines</td></tr>
+                <tr><td>Add LLM provider</td><td>Add entry in <code>config.json</code></td><td>0 lines</td></tr>
+                <tr><td>Add UI page</td><td>Drop <code>.html</code> in <code>pages/</code></td><td>0 lines</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- FOLDER = PRODUCT -->
+        <h2>Folder = Product</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Product Unit</th><th>Form</th><th>Use Case</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Agent</td><td>Folder</td><td>Domain-specific agents (news gathering, code review, translation, etc.)</td></tr>
+                <tr><td>Dispatch</td><td>Folder</td><td>Collaboration strategies (brainstorm, debate, serial conversion, etc.)</td></tr>
+                <tr><td>Tube</td><td>JSON config</td><td>Signal topology recipes and trigger chain designs</td></tr>
+                <tr><td>HTML</td><td>File</td><td>Purpose-built human-machine interaction interfaces</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>The core difference from traditional SaaS products: what users get is not a black-box service, but a fully disassemblable, learnable, and modifiable blueprint.</p>
+
+        <hr>
+
+        <!-- KEY DESIGN PRINCIPLES -->
+        <h2>Key Design Principles</h2>
+
+        <ul>
+            <li><strong>Stateless API</strong> — LLMs don't remember previous conversations. Full context is re-sent every call.</li>
+            <li><strong>LLM decides, code executes</strong> — LLMs return structured JSON tool requests, not executable code.</li>
+            <li><strong>Auto-discovery pattern</strong> — Tools, trimming strategies, agents, pages, trigger sources, drive targets — all discovered by scanning directories.</li>
+            <li><strong>Layered isolation</strong> — Each layer only knows its adjacent layer. Four layers + three-layer context isolation.</li>
+            <li><strong>Process isolation</strong> — Each agent, each Tube step runs in an independent process.</li>
+            <li><strong>Filesystem communication</strong> — Agents communicate via files. Naturally debuggable, future-distributable.</li>
+            <li><strong>Possibility management</strong> — Copy full code instead of parameterised configuration.</li>
+            <li><strong>Folder as product</strong> — Agents, Dispatches, HTML pages are independently distributable product units.</li>
+            <li><strong>Additive complexity</strong> — Adding agents, collaboration modes, tubes, pages — all additive.</li>
+            <li><strong>Declarative topology</strong> — tubes.json is the single source of signal topology truth.</li>
+            <li><strong>AI operable</strong> — Both carbon-based and silicon-based intelligence can fully control the framework.</li>
+            <li><strong>Dual-side pluggable</strong> — Tube input side (triggers/) and output side (targets/) are both extend-by-dropping-files.</li>
+        </ul>
+
+        <hr>
+
+        <!-- COMPARISON -->
+        <h2 id="comparison">Comparison with Existing Frameworks</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Dimension</th><th>CrewAI / AutoGen / LangGraph</th><th>Manus</th><th>IAF</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Code size</td><td>10,000+ lines</td><td>Closed source</td><td>~2000 lines</td></tr>
+                <tr><td>Engine model</td><td>One shared engine</td><td>Fixed three-role</td><td>Each agent gets independent engine</td></tr>
+                <tr><td>Complexity growth</td><td>Multiplicative</td><td>Hidden internally</td><td>Additive</td></tr>
+                <tr><td>Parallelism</td><td>Async pseudo-parallel</td><td>Cloud parallel</td><td>Multi-process true parallel</td></tr>
+                <tr><td>Fault isolation</td><td>None (one crash = all crash)</td><td>Unknown</td><td>Complete isolation</td></tr>
+                <tr><td>Customisability</td><td>Within config parameters</td><td>Not customisable</td><td>Any line of code</td></tr>
+                <tr><td>Collaboration paradigm</td><td>Hardcoded in framework</td><td>Fixed three-role</td><td>Pluggable, independent folders</td></tr>
+                <tr><td>Signal topology</td><td>Hardcoded</td><td>Hardcoded</td><td>tubes.json declarative rewiring</td></tr>
+                <tr><td>AI operability</td><td>Difficult (10k+ lines + SDK)</td><td>Impossible (closed source)</td><td>Fully operable (2000 lines + filesystem)</td></tr>
+                <tr><td>Product unit</td><td>Code (hard to circulate)</td><td>SaaS service</td><td>Folder / JSON entry (tradeable)</td></tr>
+                <tr><td>Agent communication</td><td>Shared memory / function calls</td><td>Internal</td><td>File system</td></tr>
+                <tr><td>Dependencies</td><td>Many third-party libraries</td><td>N/A</td><td>flask + requests + croniter</td></tr>
+                <tr><td>Management philosophy</td><td>Certainty management</td><td>Certainty management</td><td>Possibility management</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- TECH STACK -->
+        <h2>Tech Stack</h2>
+
+        <p>The entire framework depends only on Python + HTML. No Node.js, no npm, no frontend build tools.</p>
+
+<pre><code>pip install flask requests croniter</code></pre>
+
+        <p>That's it.</p>
+
+        <hr>
+
+        <!-- CURRENT STATUS -->
+        <h2>Current Status: v1.0</h2>
+
+        <ul class="status-list">
+            <li class="status-done">✅ Agent Layer (Fundamental Loop) — complete and functional</li>
+            <li class="status-done">✅ Dispatch Layer (Roundtable strategy) — complete and functional</li>
+            <li class="status-done">✅ Tube Layer (Signal Topology) — complete and functional</li>
+            <li class="status-done">✅ UI Layer (Yellow Pages + Chat + Tube Dashboard) — complete and functional</li>
+            <li class="status-done">✅ Shared Infrastructure (llm_client + token_utils) — complete</li>
+            <li class="status-done">✅ Agent Toolset (file / shell / tube / dispatch) — complete</li>
+            <li class="status-done">✅ CLI Entry Points — standardised</li>
+            <li class="status-done">✅ Architecture Validation Tests — complete</li>
+        </ul>
+
+        <hr>
+
+        <!-- GETTING STARTED -->
+        <h2 id="start">Getting Started</h2>
+
+<pre><code># Clone the repo
+git clone https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework.git
+cd intelligenism-agent-framework
+
+# Set up virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install flask requests croniter
+
+# Configure your LLM provider in config.json
+
+# Create your first agent
+cp -r template/ agents/my_agent/
+
+# Edit agents/my_agent/SOUL.md to define your agent's identity
+
+# Start the server
+python3 chat_server.py
+
+# Open http://localhost:5000</code></pre>
+
+        <hr>
+
+        <!-- BIGGER PICTURE -->
+        <h2>The Bigger Picture</h2>
+
+        <p>IAF is one component of a larger knowledge production system rooted in Intelligenism theory:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>Component</th><th>What It Does</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Knowledge Expression</td><td>AITF Protocol (open standard)</td><td>How knowledge is structured and communicated between agents</td></tr>
+                <tr><td>Knowledge Production</td><td>IAF (this framework)</td><td>How agents produce and collaborate on knowledge</td></tr>
+                <tr><td>Knowledge Retrieval</td><td>AITF-optimised embedding model</td><td>How structured knowledge is searched and retrieved</td></tr>
+                <tr><td>Knowledge Visualisation</td><td>LanceDB + Dashboard</td><td>How knowledge is viewed and used</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>Each layer is independently developed and independently valuable. Together, they form a complete pipeline from raw information to structured, retrievable, actionable knowledge.</p>
+
+        <hr>
+
+        <!-- LINKS -->
+        <h2>Links</h2>
+
+        <ul>
+            <li><strong>GitHub</strong> — <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener">intelligenism-agent-framework</a></li>
+            <li><strong>v1.0 Release Notes</strong> — <a href="iaf-v10-release.html">IAF v1.0 — Four-Layer Architecture Complete</a></li>
+            <li><strong>v0.9 Release Notes</strong> — <a href="iaf-v09-release.html">IAF v0.9 — First Public Release</a></li>
+            <li><strong>Website</strong> — <a href="https://intelligenism.club">intelligenism.club</a></li>
+            <li><strong>Theory</strong> — <a href="https://intelligenism.org" target="_blank" rel="noopener">intelligenism.org</a></li>
+        </ul>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

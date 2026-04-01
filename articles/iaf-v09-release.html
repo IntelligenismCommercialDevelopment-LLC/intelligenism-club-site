@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAF v0.9 — First Public Release</title>
+    <meta name="article-date" content="2026-03-30">
+    <meta name="article-category" content="release">
+    <meta name="article-description" content="Agent Layer and UI Layer complete. Dispatch and Scheduler architecture designed, implementation in progress.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { background: var(--bg-deep); color: var(--text-bright); font-family: var(--font-body); line-height: 1.75; min-height: 100vh; }
+        body::after { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 9999; }
+        .top-bar { border-bottom: 1px solid var(--border-dim); padding: 12px 0; position: sticky; top: 0; background: var(--bg-deep); z-index: 100; }
+        .top-bar-inner { max-width: 860px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-family: var(--font-mono); font-size: 0.85rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--accent-cyan); }
+        .theory-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-gold) !important; font-family: var(--font-mono); font-size: 0.85rem; text-decoration: none; padding: 4px 10px; border: 1px solid rgba(240,200,102,0.3); border-radius: 3px; transition: all 0.2s; }
+        .theory-link:hover { background: rgba(240,200,102,0.1); border-color: var(--accent-gold); }
+        .article { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+        .article-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid var(--accent-cyan); }
+        .article-title { font-family: var(--font-pixel); font-size: clamp(2rem, 5vw, 3rem); color: var(--accent-cyan); letter-spacing: 0.05em; line-height: 1.2; text-shadow: 0 0 25px rgba(0,229,160,0.25); }
+        .article-tagline { font-family: var(--font-mono); font-size: 0.95rem; color: var(--accent-gold); margin-top: 16px; line-height: 1.6; font-weight: 600; }
+        .article-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); margin-top: 12px; }
+        .article-meta .badge { display: inline-block; padding: 2px 8px; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 0.7rem; margin-left: 8px; }
+        .article h2 { font-family: var(--font-pixel); font-size: 1.8rem; color: var(--accent-cyan); margin: 56px 0 20px; padding-bottom: 8px; border-bottom: 1px solid var(--border-dim); letter-spacing: 0.03em; }
+        .article h3 { font-family: var(--font-pixel); font-size: 1.35rem; color: var(--accent-gold); margin: 36px 0 14px; }
+        .article p { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 16px; line-height: 1.8; }
+        .article strong { color: var(--bold-color); font-weight: 600; }
+        .article ul, .article ol { margin: 12px 0 20px 20px; }
+        .article li { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 8px; line-height: 1.7; }
+        .article li strong { color: var(--accent-gold); }
+        .article a { color: var(--accent-cyan); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+        .article pre { background: #0e0e1c; border: 1px solid var(--border-dim); padding: 18px 20px; margin: 16px 0 24px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; color: #c8c8d0; }
+        .article code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0,229,160,0.08); padding: 1px 5px; border-radius: 2px; }
+        .article pre code { background: none; padding: 0; color: #c8c8d0; }
+        .highlight-box { background: var(--bg-card); border: 1px solid var(--accent-cyan); padding: 20px 24px; margin: 24px 0; }
+        .highlight-box p { margin-bottom: 8px; }
+        .highlight-box p:last-child { margin-bottom: 0; }
+        .table-wrap { overflow-x: auto; margin: 16px 0 28px; }
+        .article table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        .article thead th { background: var(--bg-card); color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 600; text-align: left; padding: 10px 14px; border: 1px solid var(--border-dim); white-space: nowrap; }
+        .article tbody td { padding: 9px 14px; border: 1px solid var(--border-dim); color: var(--text-bright); vertical-align: top; }
+        .article tbody tr:nth-child(even) { background: rgba(26,26,50,0.5); }
+        .article tbody td:first-child { color: var(--accent-gold); font-weight: 500; white-space: nowrap; }
+        .status-list { list-style: none; margin-left: 0; padding: 0; }
+        .status-list li { padding: 6px 0; font-size: 0.9rem; }
+        .status-done { color: var(--accent-cyan); }
+        .status-wip { color: var(--accent-gold); }
+        .article hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-dim), transparent); margin: 48px 0; }
+        .footer { max-width: 860px; margin: 0 auto; padding: 24px; border-top: 1px solid var(--border-dim); text-align: center; }
+        .footer-text { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
+        .footer-text a { color: var(--text-secondary); text-decoration: none; }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links { margin-top: 8px; display: flex; justify-content: center; gap: 20px; }
+        @media (max-width: 600px) { .article { padding: 32px 16px 60px; } .article h2 { font-size: 1.5rem; margin-top: 40px; } .article h3 { font-size: 1.2rem; } .top-bar-inner { flex-direction: column; align-items: flex-start; gap: 10px; } .nav-links { gap: 12px; flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="iaf-architecture.html">IAF Docs</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">IAF v0.9 — First Public Release</h1>
+            <p class="article-tagline">The Fundamental Loop is live. Dispatch and Scheduler are next.</p>
+            <p class="article-meta">2026-03-30 <span class="badge">v0.9</span></p>
+        </header>
+
+        <h2>What is IAF?</h2>
+
+        <p><strong>Intelligenism Agent Framework</strong> is a ~550-line Python agent framework where each agent owns a complete, independent copy of the engine. Built on <a href="intelligenism-theory.html">Intelligenism theory</a>, it practises possibility management over certainty management — no single collaboration paradigm is hardcoded into the framework. Adding an agent is copying a folder. Adding a collaboration mode is adding a folder. Complexity grows additively, never multiplicatively.</p>
+
+        <hr>
+
+        <h2>What ships in v0.9</h2>
+
+        <h3>Agent Layer — Complete</h3>
+
+        <p>The core of IAF: the <strong>Fundamental Loop</strong>. Each agent is a self-contained runtime with its own LLM engine, tool executor, context manager, identity file (SOUL.md), and skill system. Current implementation: ~461 lines for the core loop + 89 lines of shared infrastructure.</p>
+
+        <ul>
+            <li><strong>LLM Communication</strong> — API connectivity via OpenRouter (Gemini Flash and others), message assembly, structured response handling</li>
+            <li><strong>Tool Executor</strong> — Auto-discovery registry, whitelist-based execution, tool call loop</li>
+            <li><strong>Context Management</strong> — Sliding-window trimming strategy, chat history persistence</li>
+            <li><strong>Identity & Skills</strong> — SOUL.md persona definition, trigger-based skill injection</li>
+        </ul>
+
+        <h3>UI Layer — Complete</h3>
+
+        <p>A browser-based interface following the yellow-pages architecture:</p>
+
+        <ul>
+            <li><strong>index.html</strong> — Auto-discovers all available pages and agents</li>
+            <li><strong>chat.html</strong> — Agent selector + conversation window</li>
+            <li><strong>pages/</strong> — Drop an HTML file, refresh, it appears. Zero coupling between pages.</li>
+        </ul>
+
+        <h3>Shared Infrastructure</h3>
+
+        <ul>
+            <li><strong>lib/llm_client.py</strong> — HTTP calls + retry logic + error classification (76 lines)</li>
+            <li><strong>lib/token_utils.py</strong> — Token estimation (13 lines)</li>
+            <li><strong>config.json</strong> — Multi-provider configuration (OpenRouter, Anthropic, xAI)</li>
+        </ul>
+
+        <hr>
+
+        <h2>What is in progress</h2>
+
+        <h3>Dispatch Layer — Architecture Designed</h3>
+
+        <p>Multi-agent collaboration orchestration. Each collaboration strategy will be an independent folder under <code>dispatch/</code>, containing its own orchestration logic, context injector, config, and optional UI page. Dispatch calls <code>lib/llm_client.call_llm()</code> directly — zero coupling with agent engines.</p>
+
+        <p>Key design decisions already made:</p>
+        <ul>
+            <li><strong>Agents are data sources, not executors</strong> — Dispatch reads SOUL.md, skills, and model config from agent folders, but never calls agent engines</li>
+            <li><strong>Three-layer context isolation</strong> — Agent chat history and Dispatch session context never pollute each other</li>
+            <li><strong>Per-strategy configuration</strong> — Same agent can use different models in different collaboration strategies</li>
+        </ul>
+
+        <h3>Scheduler Layer — Architecture Designed</h3>
+
+        <p>A unified cron-based trigger that scans <code>schedules.json</code> in both agent and dispatch folders. Fires single-agent tasks or multi-agent collaborations on schedule. Independent of chat_server.py — can run standalone for unattended operation.</p>
+
+        <hr>
+
+        <h2>Status Summary</h2>
+
+        <ul class="status-list">
+            <li class="status-done">✅ Fundamental Loop (Agent Layer) — complete</li>
+            <li class="status-done">✅ UI Layer (Yellow Pages + Chat) — complete</li>
+            <li class="status-done">✅ Shared Infrastructure (llm_client + token_utils) — complete</li>
+            <li class="status-done">✅ Architecture Validation Tests — complete</li>
+            <li class="status-wip">🔧 Dispatch Layer — architecture designed, building now</li>
+            <li class="status-wip">🔧 Scheduler Layer — architecture designed, building now</li>
+        </ul>
+
+        <hr>
+
+        <h2>Tech Stack</h2>
+
+        <div class="highlight-box">
+            <p>Pure Python + HTML. No Node.js, no npm, no frontend build tools.</p>
+            <p><code>pip install flask requests</code> — that is the entire dependency list.</p>
+        </div>
+
+        <hr>
+
+        <h2>Get the Code</h2>
+
+<pre><code>git clone https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework.git
+cd intelligenism-agent-framework
+pip install flask requests
+# Configure your LLM provider in config.json
+python chat_server.py
+# Open http://localhost:5000</code></pre>
+
+        <hr>
+
+        <h2>Links</h2>
+
+        <ul>
+            <li><strong>GitHub</strong> — <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener">intelligenism-agent-framework</a></li>
+            <li><strong>Full Architecture Docs</strong> — <a href="iaf-architecture.html">IAF Architecture Overview</a></li>
+            <li><strong>Website</strong> — <a href="https://intelligenism.club">intelligenism.club</a></li>
+            <li><strong>Theory</strong> — <a href="https://intelligenism.org" target="_blank" rel="noopener">intelligenism.org</a></li>
+        </ul>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>
