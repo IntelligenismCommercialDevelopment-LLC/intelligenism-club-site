@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": "iaf-architecture",
+    "title": "Intelligenism Agent Framework (IAF) — Architecture Overview",
+    "date": "2026-04-01",
+    "category": "doc",
+    "description": "Complete architecture deep dive: four-layer design, possibility management, signal topology, AI operability, and the theory behind the framework."
+  },
+  {
+    "id": "iaf-v10-release",
+    "title": "IAF v1.0 — Four-Layer Architecture Complete",
+    "date": "2026-04-01",
+    "category": "release",
+    "description": "All four layers complete: Agent, Dispatch, Tube, and UI. Signal topology, multi-agent collaboration, and full toolset shipped."
+  },
+  {
+    "id": "v4-protocol",
+    "title": "AITF Protocol v4.0 — Agent Interaction Text Format",
+    "date": "2026-04-01",
+    "category": "doc",
+    "description": "The expression language for all agent documents. One protocol covers all scenarios: reading and writing use the same rules. Node types, status codes, structure rules, and governance."
+  },
+  {
+    "id": "iaf-v09-release",
+    "title": "IAF v0.9 — First Public Release",
+    "date": "2026-03-30",
+    "category": "release",
+    "description": "Agent Layer and UI Layer complete. Dispatch and Scheduler architecture designed, implementation in progress."
+  },
+  {
+    "id": "intelligenism-theory",
+    "title": "Intelligenism — Condensed Theory Reference",
+    "date": "2026-03-30",
+    "category": "doc",
+    "description": "Core theory of Intelligenism: from epistemology to organisational intelligence, the Intelligent Consortium, and carbon-silicon symbiosis."
+  }
+]
