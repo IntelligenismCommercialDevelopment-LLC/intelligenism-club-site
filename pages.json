@@ -1,5 +1,12 @@
 [
   {
+    "id": "iaf-ai-operability-edition",
+    "title": "IAF AI Operability Edition — Architecture Overview",
+    "date": "2026-04-02",
+    "category": "doc",
+    "description": "A multi-agent framework purpose-built for AI agents to read, modify, deploy, and monitor autonomously through file system operations alone."
+  },
+  {
     "id": "iaf-architecture",
     "title": "Intelligenism Agent Framework (IAF) — Architecture Overview",
     "date": "2026-04-01",

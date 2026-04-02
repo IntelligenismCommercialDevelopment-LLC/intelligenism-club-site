@@ -51,29 +51,53 @@
         .stat-value { font-family: var(--font-pixel); font-size: 1.8rem; color: var(--accent-cyan); }
         .stat-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-secondary); letter-spacing: 0.1em; text-transform: uppercase; }
 
-        /* === IAF Hero Section === */
+        /* === Dual Hero Section === */
         .hero-section { margin-bottom: 48px; }
-        .hero-card { background: var(--bg-card); border: 2px solid var(--accent-cyan); padding: 36px 40px; position: relative; overflow: hidden; transition: all 0.3s; }
-        .hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue), var(--accent-cyan)); }
-        .hero-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at top left, rgba(0,229,160,0.05), transparent 60%); pointer-events: none; }
-        .hero-card:hover { box-shadow: 0 0 40px rgba(0,229,160,0.12); }
-        .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; position: relative; z-index: 1; }
-        .hero-title { font-family: var(--font-pixel); font-size: 2rem; color: var(--accent-cyan); text-shadow: 0 0 20px rgba(0,229,160,0.2); }
-        .hero-badge { font-family: var(--font-mono); font-size: 0.8rem; padding: 4px 12px; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); letter-spacing: 0.05em; flex-shrink: 0; }
-        .hero-desc { font-family: var(--font-body); font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; max-width: 720px; position: relative; z-index: 1; }
-        .hero-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; position: relative; z-index: 1; }
-        .hero-layer { background: rgba(0,229,160,0.04); border: 1px solid rgba(0,229,160,0.15); padding: 12px 14px; text-align: center; transition: all 0.2s; }
-        .hero-layer:hover { background: rgba(0,229,160,0.08); border-color: var(--accent-cyan); }
-        .hero-layer-name { font-family: var(--font-pixel); font-size: 1rem; color: var(--text-bright); margin-bottom: 2px; }
-        .hero-layer-status { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-cyan); letter-spacing: 0.08em; }
-        .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
-        .hero-btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.85rem; text-decoration: none; padding: 8px 20px; transition: all 0.2s; letter-spacing: 0.03em; }
-        .hero-btn-primary { background: var(--accent-cyan); color: var(--bg-deep); border: 1px solid var(--accent-cyan); }
-        .hero-btn-primary:hover { background: transparent; color: var(--accent-cyan); box-shadow: 0 0 16px rgba(0,229,160,0.2); }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .hero-card { background: var(--bg-card); padding: 28px 30px; position: relative; overflow: hidden; transition: all 0.3s; display: flex; flex-direction: column; }
+        .hero-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+
+        /* IAF card - cyan */
+        .hero-card-iaf { border: 2px solid var(--accent-cyan); }
+        .hero-card-iaf::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue), var(--accent-cyan)); }
+        .hero-card-iaf::after { background: radial-gradient(ellipse at top left, rgba(0,229,160,0.05), transparent 60%); }
+        .hero-card-iaf:hover { box-shadow: 0 0 30px rgba(0,229,160,0.10); }
+        .hero-card-iaf .hero-title { color: var(--accent-cyan); text-shadow: 0 0 20px rgba(0,229,160,0.2); }
+        .hero-card-iaf .hero-badge { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .hero-card-iaf .hero-layer { background: rgba(0,229,160,0.04); border: 1px solid rgba(0,229,160,0.15); }
+        .hero-card-iaf .hero-layer:hover { background: rgba(0,229,160,0.08); border-color: var(--accent-cyan); }
+        .hero-card-iaf .hero-layer-status { color: var(--accent-cyan); }
+        .hero-card-iaf .hero-btn-primary { background: var(--accent-cyan); color: var(--bg-deep); border: 1px solid var(--accent-cyan); }
+        .hero-card-iaf .hero-btn-primary:hover { background: transparent; color: var(--accent-cyan); box-shadow: 0 0 16px rgba(0,229,160,0.2); }
+
+        /* AI Edition card - gold */
+        .hero-card-ai { border: 2px solid var(--accent-gold); }
+        .hero-card-ai::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-gold), var(--accent-pink), var(--accent-gold)); }
+        .hero-card-ai::after { background: radial-gradient(ellipse at top left, rgba(240,200,102,0.05), transparent 60%); }
+        .hero-card-ai:hover { box-shadow: 0 0 30px rgba(240,200,102,0.10); }
+        .hero-card-ai .hero-title { color: var(--accent-gold); text-shadow: 0 0 20px rgba(240,200,102,0.2); }
+        .hero-card-ai .hero-badge { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .hero-card-ai .hero-layer { background: rgba(240,200,102,0.04); border: 1px solid rgba(240,200,102,0.15); }
+        .hero-card-ai .hero-layer:hover { background: rgba(240,200,102,0.08); border-color: var(--accent-gold); }
+        .hero-card-ai .hero-layer-status { color: var(--accent-gold); }
+        .hero-card-ai .hero-btn-primary { background: var(--accent-gold); color: var(--bg-deep); border: 1px solid var(--accent-gold); }
+        .hero-card-ai .hero-btn-primary:hover { background: transparent; color: var(--accent-gold); box-shadow: 0 0 16px rgba(240,200,102,0.2); }
+
+        .hero-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; position: relative; z-index: 1; }
+        .hero-title { font-family: var(--font-pixel); font-size: 1.6rem; }
+        .hero-badge { font-family: var(--font-mono); font-size: 0.75rem; padding: 3px 10px; border: 1px solid; letter-spacing: 0.05em; flex-shrink: 0; }
+        .hero-subtitle { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; position: relative; z-index: 1; }
+        .hero-desc { font-family: var(--font-body); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; position: relative; z-index: 1; flex-grow: 1; }
+        .hero-layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; position: relative; z-index: 1; }
+        .hero-layer { padding: 8px 6px; text-align: center; transition: all 0.2s; }
+        .hero-layer-name { font-family: var(--font-pixel); font-size: 0.9rem; color: var(--text-bright); margin-bottom: 1px; }
+        .hero-layer-status { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; }
+        .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; position: relative; z-index: 1; }
+        .hero-btn { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.8rem; text-decoration: none; padding: 7px 16px; transition: all 0.2s; letter-spacing: 0.03em; }
         .hero-btn-secondary { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-dim); }
         .hero-btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-bright); }
 
-        /* === Main Grid (Resources + Updates) === */
+        /* === Main Grid === */
         .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 32px; align-items: start; }
         .section-header { font-family: var(--font-pixel); font-size: 1.4rem; color: var(--accent-cyan); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .section-header::before { content: '▸'; color: var(--accent-cyan); }
@@ -91,7 +115,7 @@
         .doc-card-desc { font-family: var(--font-body); font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 12px; }
         .doc-card-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
 
-        /* Updates panel */
+        /* Updates */
         .updates-panel { position: sticky; top: 24px; }
         .updates-list { max-height: 520px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: var(--border-dim) transparent; }
         .updates-list::-webkit-scrollbar { width: 4px; }
@@ -107,7 +131,7 @@
         .updates-empty .blink { animation: blink 1.2s step-end infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* === Articles Section === */
+        /* Articles */
         .articles-section { margin-top: 48px; }
         .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
         .article-card { background: var(--bg-card); border: 1px solid var(--border-dim); padding: 20px 24px; text-decoration: none; color: inherit; transition: all 0.25s; display: block; }
@@ -129,14 +153,12 @@
         .fade-in { opacity: 0; transform: translateY(8px); animation: fadeIn 0.5s ease forwards; }
         .fade-in:nth-child(1) { animation-delay: 0.1s; }
         .fade-in:nth-child(2) { animation-delay: 0.2s; }
-        .fade-in:nth-child(3) { animation-delay: 0.3s; }
-        .fade-in:nth-child(4) { animation-delay: 0.4s; }
-        .fade-in:nth-child(5) { animation-delay: 0.5s; }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
         /* Responsive */
         @media (max-width: 860px) {
             .main-grid { grid-template-columns: 1fr; }
+            .hero-grid { grid-template-columns: 1fr; }
             .updates-panel { position: static; }
             .updates-list { max-height: 400px; }
             .header { padding: 40px 0 16px; }
@@ -144,7 +166,7 @@
             .nav-links { flex-wrap: wrap; gap: 12px; }
             .hero-layers { grid-template-columns: repeat(2, 1fr); }
             .hero-card { padding: 24px; }
-            .hero-title { font-size: 1.6rem; }
+            .hero-title { font-size: 1.4rem; }
             .articles-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 480px) {
@@ -210,44 +232,86 @@
             </div>
         </div>
 
-        <!-- === IAF Hero Section === -->
-        <div class="hero-section fade-in">
-            <div class="hero-card">
-                <div class="hero-top">
-                    <div class="hero-title">Intelligenism Agent Framework</div>
-                    <div class="hero-badge">v1.0</div>
-                </div>
-                <div class="hero-desc">
-                    Each agent owns a complete, independent copy of the entire engine.
-                    Modify any line of code without affecting other agents.
-                    Additive complexity. True parallel execution. Folder = product.
-                </div>
-                <div class="hero-layers">
-                    <div class="hero-layer">
-                        <div class="hero-layer-name">Agent</div>
-                        <div class="hero-layer-status">✅ COMPLETE</div>
+        <!-- === Dual Hero Section === -->
+        <div class="hero-section">
+            <div class="hero-grid">
+
+                <!-- IAF Standard -->
+                <div class="hero-card hero-card-iaf fade-in">
+                    <div class="hero-top">
+                        <div class="hero-title">Intelligenism Agent Framework</div>
+                        <div class="hero-badge">v1.0</div>
                     </div>
-                    <div class="hero-layer">
-                        <div class="hero-layer-name">Dispatch</div>
-                        <div class="hero-layer-status">✅ COMPLETE</div>
+                    <div class="hero-subtitle">Full Framework</div>
+                    <div class="hero-desc">
+                        The complete four-layer framework for developers who want to build, modify, and extend their own multi-agent systems. Each agent owns a full copy of the engine. Additive complexity. True parallel execution. Folder = product.
                     </div>
-                    <div class="hero-layer">
-                        <div class="hero-layer-name">Tube</div>
-                        <div class="hero-layer-status">✅ COMPLETE</div>
+                    <div class="hero-layers">
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Agent</div>
+                            <div class="hero-layer-status">✅ COMPLETE</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Dispatch</div>
+                            <div class="hero-layer-status">✅ COMPLETE</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Tube</div>
+                            <div class="hero-layer-status">✅ COMPLETE</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">UI</div>
+                            <div class="hero-layer-status">✅ COMPLETE</div>
+                        </div>
                     </div>
-                    <div class="hero-layer">
-                        <div class="hero-layer-name">UI</div>
-                        <div class="hero-layer-status">✅ COMPLETE</div>
+                    <div class="hero-actions">
+                        <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener" class="hero-btn hero-btn-primary">
+                            ★ GitHub Repo
+                        </a>
+                        <a href="articles/iaf-architecture.html" class="hero-btn hero-btn-secondary">
+                            Deep Dive →
+                        </a>
                     </div>
                 </div>
-                <div class="hero-actions">
-                    <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener" class="hero-btn hero-btn-primary">
-                        ★ GitHub Repo
-                    </a>
-                    <a href="articles/iaf-architecture.html" class="hero-btn hero-btn-secondary">
-                        Architecture Deep Dive →
-                    </a>
+
+                <!-- IAF AI Edition -->
+                <div class="hero-card hero-card-ai fade-in">
+                    <div class="hero-top">
+                        <div class="hero-title">IAF AI Operability Edition</div>
+                        <div class="hero-badge">v1.0</div>
+                    </div>
+                    <div class="hero-subtitle">Optimised for AI Agents</div>
+                    <div class="hero-desc">
+                        The same four-layer architecture, stripped down and restructured for AI agents to read, modify, deploy, and monitor autonomously. Architecture MAP included. Designed to fit in a single context window.
+                    </div>
+                    <div class="hero-layers">
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Read</div>
+                            <div class="hero-layer-status">✅ ONE PASS</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Modify</div>
+                            <div class="hero-layer-status">✅ JSON + MD</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Deploy</div>
+                            <div class="hero-layer-status">✅ 1 COMMAND</div>
+                        </div>
+                        <div class="hero-layer">
+                            <div class="hero-layer-name">Monitor</div>
+                            <div class="hero-layer-status">✅ PLAIN TEXT</div>
+                        </div>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="https://github.com/MINGHAIbot/Intelligenism-Agent-Framework-AI-Operability-Edition" target="_blank" rel="noopener" class="hero-btn hero-btn-primary">
+                            ★ GitHub Repo
+                        </a>
+                        <a href="#" class="hero-btn hero-btn-secondary">
+                            Deep Dive → (soon)
+                        </a>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -332,13 +396,11 @@
                 if (!response.ok) throw new Error('No pages.json');
                 const pages = await response.json();
 
-                // Updates: update + release categories
                 const updates = pages
                     .filter(p => p.category === 'update' || p.category === 'release')
                     .sort((a, b) => b.date.localeCompare(a.date));
                 renderUpdates(updates);
 
-                // Articles: article + doc categories
                 const articles = pages
                     .filter(p => p.category === 'article')
                     .sort((a, b) => b.date.localeCompare(a.date));

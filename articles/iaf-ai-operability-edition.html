@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAF AI Operability Edition — Architecture Overview</title>
+    <meta name="article-date" content="2026-04-02">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="A multi-agent framework purpose-built for AI agents to read, modify, deploy, and monitor autonomously through file system operations alone.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { background: var(--bg-deep); color: var(--text-bright); font-family: var(--font-body); line-height: 1.75; min-height: 100vh; }
+        body::after { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px); pointer-events: none; z-index: 9999; }
+
+        .top-bar { border-bottom: 1px solid var(--border-dim); padding: 12px 0; position: sticky; top: 0; background: var(--bg-deep); z-index: 100; }
+        .top-bar-inner { max-width: 860px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-family: var(--font-mono); font-size: 0.85rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--accent-cyan); }
+        .theory-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-gold) !important; font-family: var(--font-mono); font-size: 0.85rem; text-decoration: none; padding: 4px 10px; border: 1px solid rgba(240,200,102,0.3); border-radius: 3px; transition: all 0.2s; }
+        .theory-link:hover { background: rgba(240,200,102,0.1); border-color: var(--accent-gold); }
+
+        .article { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+        .article-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid var(--accent-gold); }
+        .article-title { font-family: var(--font-pixel); font-size: clamp(2rem, 5vw, 3rem); color: var(--accent-gold); letter-spacing: 0.05em; line-height: 1.2; text-shadow: 0 0 25px rgba(240,200,102,0.25); }
+        .article-tagline { font-family: var(--font-mono); font-size: 0.95rem; color: var(--accent-cyan); margin-top: 16px; line-height: 1.6; font-weight: 600; }
+        .article-meta { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); margin-top: 12px; }
+        .article-meta .badge { display: inline-block; padding: 2px 8px; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 0.7rem; margin-left: 8px; }
+
+        .article h2 { font-family: var(--font-pixel); font-size: 1.8rem; color: var(--accent-cyan); margin: 56px 0 20px; padding-bottom: 8px; border-bottom: 1px solid var(--border-dim); letter-spacing: 0.03em; }
+        .article h3 { font-family: var(--font-pixel); font-size: 1.35rem; color: var(--accent-gold); margin: 36px 0 14px; }
+        .article p { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 16px; line-height: 1.8; }
+        .article strong { color: var(--bold-color); font-weight: 600; }
+        .article a { color: var(--accent-cyan); text-decoration: none; }
+        .article a:hover { text-decoration: underline; }
+
+        .article blockquote { border-left: 3px solid var(--accent-gold); background: rgba(240,200,102,0.06); padding: 16px 20px; margin: 24px 0; font-size: 0.88rem; color: #d0d0c8; line-height: 1.7; }
+        .article blockquote .quote-source { display: block; margin-top: 10px; font-style: italic; color: var(--accent-gold); font-size: 0.82rem; }
+
+        .article ul, .article ol { margin: 12px 0 20px 20px; }
+        .article li { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 8px; line-height: 1.7; }
+        .article li strong { color: var(--accent-gold); }
+
+        .status-list { list-style: none; margin-left: 0; padding: 0; }
+        .status-list li { padding: 6px 0; font-size: 0.9rem; }
+        .status-done { color: var(--accent-cyan); }
+        .status-wip { color: var(--accent-gold); }
+
+        .article pre { background: #0e0e1c; border: 1px solid var(--border-dim); padding: 18px 20px; margin: 16px 0 24px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; color: #c8c8d0; }
+        .article code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0,229,160,0.08); padding: 1px 5px; border-radius: 2px; }
+        .article pre code { background: none; padding: 0; color: #c8c8d0; }
+
+        .table-wrap { overflow-x: auto; margin: 16px 0 28px; }
+        .article table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        .article thead th { background: var(--bg-card); color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 600; text-align: left; padding: 10px 14px; border: 1px solid var(--border-dim); white-space: nowrap; }
+        .article tbody td { padding: 9px 14px; border: 1px solid var(--border-dim); color: var(--text-bright); vertical-align: top; }
+        .article tbody tr:nth-child(even) { background: rgba(26,26,50,0.5); }
+        .article tbody td:first-child { color: var(--accent-gold); font-weight: 500; white-space: nowrap; }
+
+        .highlight-box { background: var(--bg-card); border: 1px solid var(--accent-cyan); padding: 20px 24px; margin: 24px 0; }
+        .highlight-box p { margin-bottom: 8px; }
+        .highlight-box p:last-child { margin-bottom: 0; }
+        .highlight-box-gold { background: var(--bg-card); border: 1px solid var(--accent-gold); padding: 20px 24px; margin: 24px 0; }
+        .highlight-box-gold p { margin-bottom: 8px; }
+        .highlight-box-gold p:last-child { margin-bottom: 0; }
+
+        .article hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-dim), transparent); margin: 48px 0; }
+
+        .footer { max-width: 860px; margin: 0 auto; padding: 24px; border-top: 1px solid var(--border-dim); text-align: center; }
+        .footer-text { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim); }
+        .footer-text a { color: var(--text-secondary); text-decoration: none; }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links { margin-top: 8px; display: flex; justify-content: center; gap: 20px; }
+
+        @media (max-width: 600px) { .article { padding: 32px 16px 60px; } .article h2 { font-size: 1.5rem; margin-top: 40px; } .article h3 { font-size: 1.2rem; } .top-bar-inner { flex-direction: column; align-items: flex-start; gap: 10px; } .nav-links { gap: 12px; flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#ai-layer">AI Layer</a>
+                <a href="#agent">Agent</a>
+                <a href="#dispatch">Dispatch</a>
+                <a href="#tube">Tube</a>
+                <a href="#takeover">Takeover</a>
+                <a href="#comparison">Comparison</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">IAF AI Operability Edition</h1>
+            <p class="article-tagline">A multi-agent framework purpose-built for AI agents to read, modify, deploy, and monitor autonomously — through file system operations alone.</p>
+            <p class="article-meta">2026-04-02 <span class="badge">AI EDITION v1.0</span></p>
+        </header>
+
+        <!-- 1. EXECUTIVE SUMMARY -->
+        <h2>Executive Summary</h2>
+
+        <p>Intelligenism Agent Framework (IAF) AI Operability Edition is a multi-agent orchestration framework purpose-built for one radical capability: <strong>to be fully understood, modified, and managed by external AI systems</strong>. While other agent frameworks are designed for human developers to write code, IAF is designed so that AI agents can operate it through file system manipulation alone.</p>
+
+        <p>This edition builds on the original IAF architecture, adding a comprehensive self-description layer, validation toolchain, structured logging, and operational safety mechanisms. The result is a framework that any flagship LLM with file read/write and shell access can take over, configure, and run autonomously.</p>
+
+        <h3>Core Positioning</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Dimension</th><th>Traditional Frameworks</th><th>IAF AI Operability Edition</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Control Interface</td><td>Python API / Code</td><td>File System (JSON, Markdown, Python files)</td></tr>
+                <tr><td>Agent Creation</td><td>Write class definitions</td><td>Copy directory + edit config files</td></tr>
+                <tr><td>Behavior Change</td><td>Modify Python code</td><td>Edit Markdown and JSON files</td></tr>
+                <tr><td>Orchestration</td><td>Code graph/DAG definitions</td><td>Declarative JSON (tubes.json)</td></tr>
+                <tr><td>Validation</td><td>Unit tests / type checking</td><td>CLI script: python3 validate.py</td></tr>
+                <tr><td>Hot Reload</td><td>Restart required</td><td>All config changes auto-detected</td></tr>
+                <tr><td>Rollback</td><td>Git revert code changes</td><td>Git revert file changes (identical)</td></tr>
+                <tr><td>AI Comprehension</td><td>Must understand Python AST</td><td>Must understand file conventions</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- 2. ARCHITECTURE OVERVIEW -->
+        <h2>Architecture Overview</h2>
+
+        <p>IAF is organized into four independent layers. Each layer communicates through the file system and HTTP APIs, with no direct code coupling between layers.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>Responsibility</th><th>Control Surface</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Agent</td><td>Independent intelligent units, each with its own engine, tools, identity, and skills</td><td>agents/{id}/ directory: SOUL.md, agent_config.json, tools/*.py</td></tr>
+                <tr><td>Dispatch</td><td>Multi-agent collaboration orchestration with pluggable strategies</td><td>dispatch/{strategy}/ directory: dispatch_config.json, rules/*.md</td></tr>
+                <tr><td>Tube</td><td>Signal topology engine for automated scheduling and chaining</td><td>tube/tubes.json (single declarative file, hot-reloaded)</td></tr>
+                <tr><td>UI</td><td>Self-contained HTML pages with auto-discovery</td><td>pages/*.html (drop file to create page)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Design Principles</h3>
+
+        <ul>
+            <li><strong>Possibility Management</strong> — Each agent owns a complete copy of its engine code. Changes to one agent never affect another. This eliminates cascading failures and enables per-agent experimentation.</li>
+            <li><strong>Additive Complexity</strong> — Adding a new agent is adding a directory. Adding a new tool is dropping a file. Adding a new automation pipeline is editing a JSON array. None of these operations require modifying existing code.</li>
+            <li><strong>File System as Control Plane</strong> — Every configuration, identity definition, tool registration, and automation pipeline is expressed as a file. An AI with Read/Write/Edit/Bash capabilities can manage the entire system without calling any internal API.</li>
+            <li><strong>Process Isolation</strong> — Each agent runs in its own subprocess context. Tube steps execute in isolated subprocesses. A crash in one agent or step cannot bring down the system.</li>
+            <li><strong>Convention Over Configuration</strong> — Tools are discovered by scanning *_tools.py files. Pages by scanning *.html files. Agents by scanning directories. No registration code needed.</li>
+        </ul>
+
+        <hr>
+
+        <!-- 3. AI OPERABILITY LAYER -->
+        <h2 id="ai-layer">AI Operability Layer</h2>
+
+        <p>The AI Operability Layer is the defining addition of this edition. It is a set of self-description files, validation tools, and operational safety mechanisms that enable external LLMs to fully manage IAF. This layer adds <strong>no runtime overhead</strong> to the framework. It exists purely as an interface between the external AI operator and the IAF file system.</p>
+
+        <h3>System Map (MANIFEST.json)</h3>
+
+        <p>A machine-readable snapshot of the entire system state, auto-generated by <code>generate_manifest.py</code> and refreshed on server startup. An external LLM reads this single file to understand what agents, tubes, dispatches, and tools exist.</p>
+
+        <p>The manifest includes: all agent IDs with their config paths, model assignments, tool lists, and log file locations; all dispatch strategies with participating agents; all tubes with their trigger types and step chains; and framework conventions for file naming patterns.</p>
+
+        <h3>Operation Playbook (PLAYBOOK.md)</h3>
+
+        <p>A comprehensive text manual that maps every management intent to a concrete sequence of file operations. An external LLM reads this file to learn how to create agents, add tools, configure automation pipelines, modify behavior, and handle errors.</p>
+
+        <p>The playbook covers: agent lifecycle (create, configure, add tools, modify behavior), tube management (create, trigger, monitor), dispatch strategy creation, engine modification procedures with diff-based synchronization, and safety protocols.</p>
+
+        <h3>Validation Script (validate.py)</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Command</th><th>Validates</th><th>Checks</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>python3 validate.py agent {id}</td><td>Single agent</td><td>Config JSON syntax, required fields, provider existence, SOUL.md presence, tool file loadability</td></tr>
+                <tr><td>python3 validate.py tool {path}</td><td>Single tool file</td><td>File naming, importability, TOOLS dict presence, handler callable, schema completeness</td></tr>
+                <tr><td>python3 validate.py tube</td><td>tubes.json</td><td>JSON syntax, tube IDs, step references to existing agents/dispatches, trigger module existence</td></tr>
+                <tr><td>python3 validate.py all</td><td>Entire system</td><td>All agents, all tools, all tubes in one pass</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Structured Logging (call_log.jsonl)</h3>
+
+        <p>Each agent writes a structured JSONL log of every invocation. The external LLM reads these logs to understand what happened during agent execution, diagnose failures, and verify that automated pipelines are working correctly.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Event</th><th>Key Fields</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>call_started</td><td>model, mode, message_preview</td><td>Agent invocation begins</td></tr>
+                <tr><td>llm_call</td><td>loop, tokens_est, duration_ms</td><td>One LLM API round-trip</td></tr>
+                <tr><td>tool_call</td><td>tool_name, args_summary, result_length, is_error</td><td>One tool execution</td></tr>
+                <tr><td>call_completed</td><td>loops_used, reply_length, total_duration_ms</td><td>Agent returns result</td></tr>
+                <tr><td>call_failed</td><td>error</td><td>Agent invocation failed</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Tool Contract (TOOL_CONTRACT.md)</h3>
+
+        <p>A specification document that defines the exact format for writing new tool files. When an external LLM needs to give an agent a new capability, it reads this contract to produce a correctly structured <code>*_tools.py</code> file that will be automatically discovered and loaded.</p>
+
+        <h3>Safety Mechanisms</h3>
+
+        <ul>
+            <li><strong>Git Snapshot Script (auto_commit.sh)</strong> — Creates a Git commit before any batch modification. The external LLM runs <code>bash auto_commit.sh</code> before making changes, enabling instant rollback via <code>git revert</code> if anything goes wrong.</li>
+            <li><strong>Hot Reload</strong> — All configuration files are hot-reloaded. agent_config.json, SOUL.md, context files, tools, tubes.json, dispatch configs, and rules files are re-read on every invocation or polling cycle. Zero restart needed.</li>
+            <li><strong>Dangerous Operation List</strong> — The playbook explicitly marks high-risk operations (deleting agent directories, modifying engine code, changing provider keys) and mandates Git snapshots before any such operation.</li>
+        </ul>
+
+        <hr>
+
+        <!-- 4. AGENT LAYER -->
+        <h2 id="agent">Agent Layer</h2>
+
+        <p>Each agent is an independent directory under <code>agents/</code> containing its complete runtime: engine code, identity, tools, skills, context strategy, and logs. Creating a new agent is a directory copy operation: <code>cp -r template/ agents/new_agent/</code>.</p>
+
+        <h3>Agent Directory Structure</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>File</th><th>Category</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>agent_config.json</td><td>Adjustable</td><td>Model, provider, context files, skills, trim strategy</td></tr>
+                <tr><td>SOUL.md</td><td>Adjustable</td><td>Agent identity, personality, behavioral guidelines</td></tr>
+                <tr><td>tools/*_tools.py</td><td>Adjustable</td><td>Available tools (auto-discovered, hot-reloaded)</td></tr>
+                <tr><td>skills/*.md</td><td>Adjustable</td><td>Conditional task instructions (trigger-matched)</td></tr>
+                <tr><td>context/sliding_window.py</td><td>Adjustable</td><td>Context trimming strategy</td></tr>
+                <tr><td>core/direct_llm.py</td><td>Semi-infrastructure</td><td>Engine core: message assembly, LLM call loop, logging</td></tr>
+                <tr><td>core/tool_executor.py</td><td>Semi-infrastructure</td><td>Tool registry with auto-discovery and hot reload</td></tr>
+                <tr><td>history.jsonl</td><td>Runtime</td><td>Chat conversation history</td></tr>
+                <tr><td>call_log.jsonl</td><td>Runtime</td><td>Structured execution log</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Five-Layer Message Assembly</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Layer</th><th>Source</th><th>Behavior</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1. System Prompt</td><td>context_files in agent_config.json</td><td>All listed files concatenated as system message. Always loaded.</td></tr>
+                <tr><td>2. Skill Injection</td><td>skills array in agent_config.json</td><td>Keyword-matched .md files injected. Loaded on trigger hit.</td></tr>
+                <tr><td>3. History</td><td>history.jsonl</td><td>Recent conversation turns. Chat mode only, skipped in batch mode.</td></tr>
+                <tr><td>4. Current Input</td><td>User message or tube payload</td><td>The actual request being processed.</td></tr>
+                <tr><td>5. Context Trimming</td><td>context/sliding_window.py</td><td>Ensures total tokens stay within max_context budget.</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Tool Auto-Discovery and Hot Reload</h3>
+
+        <p>The tool executor scans the agent's <code>tools/</code> directory for files matching <code>*_tools.py</code> and imports their TOOLS dictionaries. On each agent invocation, the executor checks the directory modification time. If any file has been added, removed, or modified since the last scan, tools are re-discovered automatically. An external LLM can write a new tool file and it takes effect on the very next agent call, with zero restart required.</p>
+
+        <h3>Three Capability Tiers</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Tier</th><th>Carrier</th><th>Loading</th><th>Use Case</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Identity & Knowledge</td><td>.md files via context_files</td><td>Every call</td><td>Permanent information the agent always knows</td></tr>
+                <tr><td>Conditional Instructions</td><td>.md files via skills triggers</td><td>On keyword match</td><td>Scenario-specific task instructions</td></tr>
+                <tr><td>Execution Capability</td><td>*_tools.py files</td><td>Every call (hot-reloaded)</td><td>Actions the agent can perform</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- 5. DISPATCH LAYER -->
+        <h2 id="dispatch">Dispatch Layer</h2>
+
+        <p>The Dispatch layer orchestrates multi-agent collaboration. Each collaboration strategy is a self-contained directory that can be independently developed and deployed. The layer does not call the agent engine directly. Instead, it treats agent directories as data sources and calls the LLM API through its own context assembly pipeline.</p>
+
+        <div class="highlight-box-gold">
+            <p><strong>Key Design:</strong> In dispatch mode, an agent is not an autonomous entity making decisions. It is an engine driven by the dispatch orchestrator. The dispatch decides what the agent knows (via context_files), what role it plays (via rules/*.md), and when it speaks (via turn_order). The same agent can behave differently in different collaboration strategies without any modification to the agent itself.</p>
+        </div>
+
+        <h3>Strategy Structure</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Component</th><th>File</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Orchestration Logic</td><td>dispatch.py</td><td>Round control, agent sequencing, termination conditions</td></tr>
+                <tr><td>Configuration</td><td>dispatch_config.json</td><td>Participating agents, turn order, rounds, context sources</td></tr>
+                <tr><td>Role Definitions</td><td>rules/*.md</td><td>Per-agent role instructions for this strategy</td></tr>
+                <tr><td>Infrastructure</td><td>dispatch_base.py, session_manager.py, context_injector.py</td><td>Tool loop, LLM parsing, session CRUD, context assembly (do not modify)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- 6. TUBE LAYER -->
+        <h2 id="tube">Tube Layer (Signal Topology)</h2>
+
+        <p>The Tube layer is the automation and scheduling dimension of IAF. It connects agents, dispatches, and other tubes through declarative signal pathways defined in a single file: <code>tube/tubes.json</code>. The tube runner polls this file every 15 seconds, checks trigger conditions, and executes step chains in isolated subprocesses.</p>
+
+        <h3>Enhanced Execution (New in This Edition)</h3>
+
+        <ul>
+            <li><strong>Step-Level Retry</strong> — Each step can define a retry policy with maximum attempts and delay between retries. Failed steps are retried according to their configuration before being marked as failed. All retry attempts are logged.</li>
+            <li><strong>Failure Strategy</strong> — Each step can define an on_fail policy: <code>stop</code> (default, halt the tube) or <code>continue</code> (skip failed step, proceed to next). This enables resilient pipelines where non-critical steps can fail without blocking the entire workflow.</li>
+            <li><strong>Inter-Step Data Passing</strong> — Step outputs are captured in <code>tube/staging/{tube_id}_{timestamp}/</code> as text files. Subsequent steps can reference the previous step's output via the <code>$PREV_OUTPUT</code> placeholder in their payload.</li>
+        </ul>
+
+        <h3>Trigger and Target Extensibility</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Extension Point</th><th>Interface</th><th>Location</th><th>Discovery</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Trigger Source</td><td>check(config, state) → bool</td><td>tube/triggers/{type}.py</td><td>Auto-discovered by type name in tubes.json</td></tr>
+                <tr><td>Execution Target</td><td>build_command(step, project_root) → list</td><td>tube/targets/{type}.py</td><td>Auto-discovered by type name in tubes.json</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- 7. EXTERNAL LLM TAKEOVER MODEL -->
+        <h2 id="takeover">External LLM Takeover Model</h2>
+
+        <p>The defining feature of the AI Operability Edition is that the entire framework can be managed by an external LLM agent (Claude Code, GPT Agent, or any agent with file and shell access) without touching any internal API or using any IAF-internal tool.</p>
+
+        <h3>The External Operator's Toolkit</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>LLM Tool</th><th>IAF Operation</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Read</td><td>Read MANIFEST.json, agent configs, SOUL.md, tubes.json, logs</td></tr>
+                <tr><td>Write</td><td>Create new agent directories, write tool files, write config files</td></tr>
+                <tr><td>Edit</td><td>Modify existing configs, SOUL.md, tubes.json</td></tr>
+                <tr><td>Bash</td><td>cp -r template/, python3 validate.py, bash auto_commit.sh, git operations, curl API triggers</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Onboarding Sequence</h3>
+
+        <p>An external LLM takes over an IAF instance in <strong>three reads</strong>:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Step</th><th>File</th><th>Knowledge Gained</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>MANIFEST.json</td><td>What agents, tubes, dispatches exist; their configs and file paths</td></tr>
+                <tr><td>2</td><td>PLAYBOOK.md</td><td>How to perform every management operation step by step</td></tr>
+                <tr><td>3</td><td>Architecture Map</td><td>How the system works internally; what to touch and what not to touch</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Operation Loop</h3>
+
+        <div class="highlight-box">
+            <p>The external LLM follows a consistent loop for every management task: <strong>snapshot</strong> (auto_commit.sh) → <strong>operate</strong> (Read/Write/Edit/Bash) → <strong>validate</strong> (validate.py all) → <strong>commit</strong> (auto_commit.sh). If validation fails, the LLM reads the error output, fixes the issue, and re-validates. If the fix introduces new problems, <code>git revert</code> provides instant rollback.</p>
+        </div>
+
+        <h3>Why File System, Not API</h3>
+
+        <p>Traditional frameworks expose control through Python APIs, requiring the controlling LLM to generate syntactically correct code, manage imports, handle type systems, and reason about runtime state. IAF eliminates all of these failure modes by expressing control as file operations.</p>
+
+        <p>Editing a JSON field has a near-zero chance of causing a syntax error compared to modifying a Python class definition. Dropping a file in a directory is an atomic operation that either succeeds completely or fails obviously. And every change is automatically versioned through Git, providing a complete audit trail and rollback capability.</p>
+
+        <hr>
+
+        <!-- 8. COMPETITIVE LANDSCAPE -->
+        <h2 id="comparison">Competitive Landscape</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Framework</th><th>Control Surface</th><th>Agent Creation</th><th>Config Change</th><th>AI Controllability</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>IAF AI Edition</td><td>File system</td><td>Copy directory</td><td>Edit JSON/MD</td><td>Native: designed for AI control</td></tr>
+                <tr><td>CrewAI</td><td>Python API + YAML</td><td>Write Python class</td><td>Edit YAML + code</td><td>Partial: YAML editable, orchestration in code</td></tr>
+                <tr><td>LangGraph</td><td>Python API</td><td>Define graph nodes</td><td>Modify Python</td><td>Low: graph definition requires code changes</td></tr>
+                <tr><td>AutoGen</td><td>Python API + YAML</td><td>Configure in code</td><td>Edit YAML + code</td><td>Partial: YAML config, but maintenance mode</td></tr>
+                <tr><td>OpenAI Agents SDK</td><td>Python API</td><td>Write Python</td><td>Modify Python</td><td>Low: all configuration in code</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>The fundamental architectural difference is that IAF treats the file system as its primary control interface, while all other frameworks treat Python code as their primary control interface. This is not a feature that can be added to existing frameworks through a plugin or wrapper. It is a foundational design decision that shapes the entire architecture.</p>
+
+        <hr>
+
+        <!-- 9. POTENTIAL APPLICATIONS -->
+        <h2>Potential Applications</h2>
+
+        <h3>AI-Managed Website Operations</h3>
+        <p>An external LLM creates specialized agents (content monitor, SEO analyzer, uptime checker, report generator), wires them into scheduled tubes, and uses dispatch for multi-agent analysis of complex issues. The entire setup is created and maintained through file operations.</p>
+
+        <h3>Autonomous Research Pipelines</h3>
+        <p>A tube-driven pipeline where Agent A collects data, Agent B analyzes it, and a roundtable dispatch synthesizes conclusions. The external LLM monitors logs, adjusts agent prompts based on output quality, and adds new pipeline stages as research evolves.</p>
+
+        <h3>Self-Evolving Agent Teams</h3>
+        <p>The external LLM reviews agent performance through call_log.jsonl, identifies underperforming agents, modifies their SOUL.md or tool configurations, validates changes, and monitors improvement. Over time, the agent team evolves its capabilities without human intervention in the optimization loop.</p>
+
+        <h3>Multi-Model Orchestration</h3>
+        <p>Different agents can use different LLM providers and models. The external LLM can assign cost-effective models to simple monitoring tasks and premium models to complex analysis, optimizing the cost-capability tradeoff across the entire system through agent_config.json edits.</p>
+
+        <hr>
+
+        <!-- 10. TECHNICAL SPECIFICATIONS -->
+        <h2>Technical Specifications</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Component</th><th>Technology</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Language</td><td>Python 3</td></tr>
+                <tr><td>Web Framework</td><td>Flask</td></tr>
+                <tr><td>LLM Integration</td><td>OpenRouter API (Gemini, Claude, GPT, Qwen, others)</td></tr>
+                <tr><td>Frontend</td><td>Vanilla HTML/JS/CSS (no build tools)</td></tr>
+                <tr><td>Data Storage</td><td>JSON (config) + JSONL (logs, history, sessions)</td></tr>
+                <tr><td>Scheduling</td><td>croniter</td></tr>
+                <tr><td>Dependencies</td><td>flask, requests, croniter (3 packages total)</td></tr>
+                <tr><td>Core Codebase</td><td>~3,300 lines (after AI Operability additions)</td></tr>
+                <tr><td>AI Operability Code</td><td>~300 lines (validate.py, generate_manifest.py, logging, hot reload)</td></tr>
+                <tr><td>License</td><td>Apache 2.0</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>File Inventory Summary</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Category</th><th>Count</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Python source files</td><td>~55</td><td>Engine, tools, infrastructure, utilities</td></tr>
+                <tr><td>Configuration files</td><td>~8</td><td>JSON configs across all layers</td></tr>
+                <tr><td>Markdown files</td><td>~10+</td><td>Documentation, agent identities, role definitions</td></tr>
+                <tr><td>HTML files</td><td>~5</td><td>Portal, chat, dashboard, dispatch UI, custom pages</td></tr>
+                <tr><td>AI Operability files</td><td>5</td><td>MANIFEST.json, PLAYBOOK.md, validate.py, generate_manifest.py, auto_commit.sh</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- LINKS -->
+        <h2>Links</h2>
+
+        <ul>
+            <li><strong>GitHub (AI Edition)</strong> — <a href="https://github.com/MINGHAIbot/Intelligenism-Agent-Framework-AI-Operability-Edition" target="_blank" rel="noopener">Intelligenism-Agent-Framework-AI-Operability-Edition</a></li>
+            <li><strong>GitHub (Standard Edition)</strong> — <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener">intelligenism-agent-framework</a></li>
+            <li><strong>IAF Architecture Docs</strong> — <a href="iaf-architecture.html">Standard Edition Architecture Overview</a></li>
+            <li><strong>Website</strong> — <a href="https://intelligenism.club">intelligenism.club</a></li>
+            <li><strong>Theory</strong> — <a href="https://intelligenism.org" target="_blank" rel="noopener">intelligenism.org</a></li>
+        </ul>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener" class="footer-text" style="color: var(--text-secondary);">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>
