@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """
 build_pages.py — Scan articles/ directory, extract metadata from HTML files,
-generate pages.json AND inject static <a href> links into index.html.
+generate pages.json, inject static <a href> links into index.html,
+and generate sitemap.xml.
 
 Usage: python3 build_pages.py
 
 What it does:
 1. Scans articles/*.html, extracts metadata (title, date, category, description)
-2. Generates pages.json (unchanged)
+2. Generates pages.json (backward compatible)
 3. Reads index.html, finds marker comments, injects static links between them
    - category "doc"    → Articles column (article-card style)
    - category "update" → Updates column (update-item style)
    - category "release"→ Updates column (update-item style)
 4. Writes updated index.html
+5. Generates sitemap.xml with all pages and lastmod dates
 
 Markers in index.html:
   <!-- BUILD_PAGES_ARTICLES_START -->
@@ -27,10 +29,13 @@ Markers in index.html:
 import os
 import re
 import json
+from datetime import date
 
 ARTICLES_DIR = "articles"
 PAGES_JSON = "pages.json"
 INDEX_FILE = "index.html"
+SITEMAP_FILE = "sitemap.xml"
+SITE_URL = "https://intelligenism.club"
 
 
 def extract_meta(html_content, name):
@@ -150,6 +155,37 @@ def inject_into_index(pages):
     print(f"Injected {len(articles)} article(s) and {len(updates)} update(s) into {INDEX_FILE}.")
 
 
+def generate_sitemap(pages):
+    """Generate sitemap.xml with homepage + all article pages."""
+    today = date.today().isoformat()
+
+    urls = []
+    # Homepage
+    urls.append(f'  <url>\n    <loc>{SITE_URL}/</loc>\n    <lastmod>{today}</lastmod>\n  </url>')
+
+    # Article pages
+    for p in pages:
+        lastmod = p['date'] if p['date'] != '1970-01-01' else today
+        urls.append(
+            f'  <url>\n'
+            f'    <loc>{SITE_URL}/articles/{p["id"]}.html</loc>\n'
+            f'    <lastmod>{lastmod}</lastmod>\n'
+            f'  </url>'
+        )
+
+    sitemap = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + '\n'.join(urls) + '\n'
+        '</urlset>\n'
+    )
+
+    with open(SITEMAP_FILE, 'w', encoding='utf-8') as f:
+        f.write(sitemap)
+
+    print(f"Generated {SITEMAP_FILE} with {len(urls)} URLs.")
+
+
 def main():
     pages = scan_articles()
 
@@ -161,7 +197,10 @@ def main():
     # 2. Inject static links into index.html
     inject_into_index(pages)
 
-    # 3. Summary
+    # 3. Generate sitemap.xml
+    generate_sitemap(pages)
+
+    # 4. Summary
     for p in pages:
         print(f"  [{p['category']}] {p['date']} — {p['title']}")
 
