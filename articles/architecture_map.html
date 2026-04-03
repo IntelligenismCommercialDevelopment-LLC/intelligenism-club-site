@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAF Architecture Map — AI Operations Navigation Guide</title>
+    <meta name="article-date" content="2026-04-02">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="Navigation guide for external LLMs taking over IAF. Which files to touch, which to leave alone, and where to modify.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg-deep:#0c0c18;--bg-surface:#141428;--bg-card:#1a1a32;--bg-card-hover:#22224a;--border-dim:#2a2a4a;--border-glow:#00e5a0;--text-bright:#f5f5f0;--text-primary:#e0e0e8;--text-secondary:#8888a0;--text-dim:#55556a;--accent-cyan:#00e5a0;--accent-gold:#f0c866;--accent-blue:#5b8def;--accent-pink:#e06090;--bold-color:#ffd866;--font-pixel:'VT323',monospace;--font-mono:'Share Tech Mono','IBM Plex Mono',monospace;--font-body:'IBM Plex Mono',monospace}
+        html{font-size:16px;scroll-behavior:smooth}body{background:var(--bg-deep);color:var(--text-bright);font-family:var(--font-body);line-height:1.75;min-height:100vh}body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999}
+        .top-bar{border-bottom:1px solid var(--border-dim);padding:12px 0;position:sticky;top:0;background:var(--bg-deep);z-index:100}.top-bar-inner{max-width:860px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.nav-links{display:flex;gap:20px;align-items:center}.nav-links a{color:var(--text-secondary);text-decoration:none;font-family:var(--font-mono);font-size:.85rem;transition:color .2s}.nav-links a:hover{color:var(--accent-cyan)}.theory-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent-gold)!important;font-family:var(--font-mono);font-size:.85rem;text-decoration:none;padding:4px 10px;border:1px solid rgba(240,200,102,.3);border-radius:3px;transition:all .2s}.theory-link:hover{background:rgba(240,200,102,.1);border-color:var(--accent-gold)}
+        .article{max-width:860px;margin:0 auto;padding:48px 24px 80px}.article-header{margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid var(--accent-gold)}.article-title{font-family:var(--font-pixel);font-size:clamp(2rem,5vw,3rem);color:var(--accent-gold);letter-spacing:.05em;line-height:1.2;text-shadow:0 0 25px rgba(240,200,102,.25)}.article-tagline{font-family:var(--font-mono);font-size:.95rem;color:var(--accent-cyan);margin-top:16px;line-height:1.6;font-weight:600}.article-meta{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim);margin-top:12px}.article-meta .badge{display:inline-block;padding:2px 8px;border:1px solid var(--accent-gold);color:var(--accent-gold);font-size:.7rem;margin-left:8px}
+        .article h2{font-family:var(--font-pixel);font-size:1.8rem;color:var(--accent-cyan);margin:56px 0 20px;padding-bottom:8px;border-bottom:1px solid var(--border-dim);letter-spacing:.03em}.article h3{font-family:var(--font-pixel);font-size:1.35rem;color:var(--accent-gold);margin:36px 0 14px}.article p{font-size:.9rem;color:var(--text-bright);margin-bottom:16px;line-height:1.8}.article strong{color:var(--bold-color);font-weight:600}.article a{color:var(--accent-cyan);text-decoration:none}.article a:hover{text-decoration:underline}
+        .article blockquote{border-left:3px solid var(--accent-gold);background:rgba(240,200,102,.06);padding:16px 20px;margin:24px 0;font-size:.88rem;color:#d0d0c8;line-height:1.7}.article blockquote .quote-source{display:block;margin-top:10px;font-style:italic;color:var(--accent-gold);font-size:.82rem}
+        .article ul,.article ol{margin:12px 0 20px 20px}.article li{font-size:.9rem;color:var(--text-bright);margin-bottom:8px;line-height:1.7}.article li strong{color:var(--accent-gold)}
+        .article pre{background:#0e0e1c;border:1px solid var(--border-dim);padding:18px 20px;margin:16px 0 24px;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6;color:#c8c8d0}.article code{font-family:var(--font-mono);font-size:.85rem;color:var(--accent-cyan);background:rgba(0,229,160,.08);padding:1px 5px;border-radius:2px}.article pre code{background:none;padding:0;color:#c8c8d0}
+        .table-wrap{overflow-x:auto;margin:16px 0 28px}.article table{width:100%;border-collapse:collapse;font-size:.82rem}.article thead th{background:var(--bg-card);color:var(--accent-cyan);font-family:var(--font-mono);font-weight:600;text-align:left;padding:10px 14px;border:1px solid var(--border-dim);white-space:nowrap}.article tbody td{padding:9px 14px;border:1px solid var(--border-dim);color:var(--text-bright);vertical-align:top}.article tbody tr:nth-child(even){background:rgba(26,26,50,.5)}.article tbody td:first-child{color:var(--accent-gold);font-weight:500;white-space:nowrap}
+        .highlight-box{background:var(--bg-card);border:1px solid var(--accent-cyan);padding:20px 24px;margin:24px 0}.highlight-box p{margin-bottom:8px}.highlight-box p:last-child{margin-bottom:0}
+        .article hr{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border-dim),transparent);margin:48px 0}
+        .footer{max-width:860px;margin:0 auto;padding:24px;border-top:1px solid var(--border-dim);text-align:center}.footer-text{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim)}.footer-text a{color:var(--text-secondary);text-decoration:none}.footer-text a:hover{color:var(--accent-cyan)}.footer-links{margin-top:8px;display:flex;justify-content:center;gap:20px}
+        @media(max-width:600px){.article{padding:32px 16px 60px}.article h2{font-size:1.5rem;margin-top:40px}.article h3{font-size:1.2rem}.top-bar-inner{flex-direction:column;align-items:flex-start;gap:10px}.nav-links{gap:12px;flex-wrap:wrap}}
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#entry-point">Entry Point</a>
+                <a href="#classification">Classification</a>
+                <a href="#infrastructure">Infrastructure</a>
+                <a href="#adjustable">Adjustable</a>
+                <a href="#decision-tree">Decision Tree</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">IAF Architecture Map</h1>
+            <p class="article-tagline">AI Operations Navigation Guide — which files to touch, which to leave alone, and where to modify.</p>
+            <p class="article-meta">2026-04-02 <span class="badge">MAP v0.4</span></p>
+        </header>
+
+        <blockquote>
+            <p>This document serves as the operations navigation guide for external LLMs (Claude Code, GPT Agent, etc.) taking over IAF. It answers not "what functions are in each file," but <strong>"which files can be touched, which should be left alone, and which areas to modify when touching them."</strong></p>
+            <p><strong>Core principle: Do not touch infrastructure unless absolutely necessary. 99% of requirements can be fulfilled by adjusting Adjustable components.</strong></p>
+            <p>v0.4 changes: Integrated full external LLM takeover plan. Added MANIFEST.json, validate.py, call_log.jsonl, tool hot-reload, Tube retry/data-passing, auto_commit.sh and other component descriptions. Maintains independent agent engine copy design (possibility management) without introducing engine inheritance.</p>
+        </blockquote>
+
+        <hr>
+
+        <!-- Section 0 -->
+        <h2 id="entry-point">0. External LLM Takeover Entry Point</h2>
+
+        <p>When an external LLM first takes over an IAF instance, read these three files in order to begin work:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Order</th><th>File</th><th>Question It Answers</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td><code>MANIFEST.json</code></td><td>What does the system look like right now? What agents, tubes, and dispatches exist?</td></tr>
+                <tr><td>2</td><td><code>PLAYBOOK.md</code></td><td>What file operations correspond to each intent? What are the steps?</td></tr>
+                <tr><td>3</td><td>This document</td><td>How does the system work? What is each file's role? Which can be touched and which cannot?</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>0.1 MANIFEST.json (System Map)</h3>
+
+        <p>Auto-generated by <code>generate_manifest.py</code> scanning directories, also auto-refreshed when <code>chat_server.py</code> starts.</p>
+
+        <pre><code>{
+  "framework": "IAF",
+  "version": "0.1.0",
+  "generated_at": "2026-04-01T14:30:00Z",
+
+  "structure": {
+    "agents_dir": "agents/",
+    "template_dir": "template/",
+    "dispatch_dir": "dispatch/",
+    "tube_dir": "tube/",
+    "global_config": "config.json",
+    "tube_config": "tube/tubes.json",
+    "tube_log": "tube/tube_log.jsonl",
+    "pages_dir": "pages/"
+  },
+
+  "agents": {
+    "charlie": {
+      "config": "agents/charlie/agent_config.json",
+      "soul": "agents/charlie/SOUL.md",
+      "tools": ["file_tools.py", "shell_tools.py", "dispatch_tools.py", "tube_tools.py"],
+      "history": "agents/charlie/history.jsonl",
+      "call_log": "agents/charlie/call_log.jsonl",
+      "model": "google/gemini-3-flash-preview"
+    }
+  },
+
+  "dispatches": {
+    "roundtable": {
+      "config": "dispatch/roundtable/dispatch_config.json",
+      "agents": ["charlie", "mcmillan"],
+      "ui": "dispatch/roundtable/roundtable.html"
+    }
+  },
+
+  "tubes": {
+    "morning_news": {
+      "enabled": true,
+      "triggers": ["cron:0 3 * * *", "manual"],
+      "steps": ["agent:charlie"]
+    }
+  },
+
+  "conventions": {
+    "tool_file_pattern": "*_tools.py",
+    "tool_export_variable": "TOOLS",
+    "context_strategy_dir": "context/",
+    "skill_dir": "skills/"
+  }
+}</code></pre>
+
+        <p>External LLM manual refresh: <code>python3 generate_manifest.py</code></p>
+
+        <h3>0.2 PLAYBOOK.md (Operations Manual)</h3>
+        <p>Plain-text operations manual covering complete steps for all common operations. See standalone file.</p>
+
+        <h3>0.3 validate.py (Validation Script)</h3>
+        <p>External LLM calls via Bash after modifying files to confirm changes are valid.</p>
+
+        <pre><code>python3 validate.py agent charlie          # Validate single agent
+python3 validate.py tool agents/charlie/tools/http_tools.py  # Validate tool file
+python3 validate.py tube                   # Validate tubes.json
+python3 validate.py all                    # Global validation</code></pre>
+
+        <p>Output format: Success → <code>OK</code>, Failure → <code>FAIL: N error(s)</code> + line-by-line error descriptions. Plain text, no colours.</p>
+
+        <h3>0.4 auto_commit.sh (Safety Snapshot)</h3>
+        <p>External LLM calls before performing batch modifications:</p>
+        <pre><code>bash auto_commit.sh "Pre-modification snapshot: adding http tools to charlie"</code></pre>
+        <p>Rollback: <code>git revert HEAD</code> or <code>git checkout -- {file}</code></p>
+
+        <hr>
+
+        <!-- Section 1 -->
+        <h2 id="classification">1. Global Classification</h2>
+
+        <p>All files in the framework fall into two categories:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Category</th><th>Meaning</th><th>AI Operation Mode</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Infrastructure</strong></td><td>How the framework operates. The plumbing.</td><td>Read once to build understanding, then don't touch</td></tr>
+                <tr><td><strong>Adjustable</strong></td><td>What the system does. The building blocks and wiring.</td><td>May be operated on every task</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>Decision rule:</strong> Upon receiving a requirement, first confirm whether it can be achieved by adjusting Adjustable components. Only when the requirement involves the framework's capability boundary itself (new LLM response formats, new storage mechanisms, new communication protocols) should you consider touching Infrastructure.</p>
+        </div>
+
+        <hr>
+
+        <!-- Section 2 -->
+        <h2 id="infrastructure">2. Infrastructure Inventory (Do Not Touch)</h2>
+
+        <h3>2.1 Shared Layer lib/</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>Interface AI Needs to Know</th></tr></thead>
+            <tbody>
+                <tr><td><code>lib/llm_client.py</code></td><td>~76</td><td>HTTP LLM calls + retry + error classification</td><td><code>call_llm(url, key, model, messages, tools=None) → response</code></td></tr>
+                <tr><td><code>lib/token_utils.py</code></td><td>~13</td><td>Token count estimation</td><td><code>estimate_tokens(text) → int</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>2.2 Web Service Layer</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>What AI Needs to Know</th></tr></thead>
+            <tbody>
+                <tr><td><code>chat_server.py</code></td><td>~220</td><td>Flask router + Tube Runner startup + MANIFEST generation</td><td>Contains no business logic, only route dispatch. Auto-starts TubeRunner background thread and generates MANIFEST.json on startup</td></tr>
+                <tr><td><code>dispatch_routes.py</code></td><td>~330</td><td>Dispatch layer Flask Blueprint</td><td>Calls dispatch.py public functions, contains no orchestration logic</td></tr>
+                <tr><td><code>tube_routes.py</code></td><td>~280</td><td>Tube layer Flask Blueprint</td><td>Manages tube listing, status queries, manual triggers, log read/clear</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>2.3 Agent Engine template/</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>What AI Needs to Know</th></tr></thead>
+            <tbody>
+                <tr><td><code>template/core/direct_llm.py</code></td><td>~290</td><td>Core loop engine</td><td><code>call_agent(message, mode, max_loops) → response</code>. Loads system prompt via <code>context_files</code>. Includes call_log.jsonl structured logging</td></tr>
+                <tr><td><code>template/core/tool_executor.py</code></td><td>~60</td><td>Tool auto-discovery registry + hot-reload</td><td>Scans tools/*_tools.py, imports TOOLS dict. Checks tools/ directory mtime before each execute() call, auto-rescans on changes</td></tr>
+                <tr><td><code>template/context/sliding_window.py</code></td><td>~47</td><td>Default context trimming strategy</td><td><code>trim(messages, max_tokens) → trimmed_messages</code></td></tr>
+                <tr><td><code>template/tools/file_tools.py</code></td><td>~78</td><td>Default toolset (read/write files, list directory)</td><td>Can be replaced or extended after copying to new Agent</td></tr>
+                <tr><td><code>template/tools/TOOL_CONTRACT.md</code></td><td>—</td><td>Tool file format contract</td><td>External LLM references this when writing new tools</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <blockquote>
+            <p><strong>Note:</strong> <code>template/</code> is the copy source. When creating a new Agent: <code>cp -r template/ agents/xxx/</code>, after which files in agents/xxx/ become Adjustable. Do not modify template/ itself.</p>
+        </blockquote>
+
+        <p><strong>direct_llm.py five-layer message assembly model:</strong></p>
+
+        <pre><code>Layer 1: context_files content → concatenated as system prompt
+Layer 2: skills trigger matching → injected as user+assistant dialogue pairs when matched
+Layer 3: history.jsonl → loaded in chat mode only, skipped in batch mode
+Layer 4: current user message
+Layer 5: trim → ensures total stays within max_context - 8000</code></pre>
+
+        <p><strong>direct_llm.py path resolution rules (shared by context_files and skill_file):</strong></p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Priority</th><th>Resolution Method</th><th>Example</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>Agent directory relative path</td><td><code>"SOUL.md"</code> → <code>agents/xxx/SOUL.md</code></td></tr>
+                <tr><td>2</td><td>Framework root relative path</td><td><code>"dispatch/roundtable/rules/default.md"</code></td></tr>
+                <tr><td>3</td><td>Absolute path</td><td><code>"/data/external/reference.md"</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>direct_llm.py structured logging (call_log.jsonl):</strong></p>
+        <p>Each <code>call_agent()</code> invocation records the following events in <code>agents/xxx/call_log.jsonl</code>:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Event</th><th>Key Fields</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td><code>call_started</code></td><td>model, mode, message_preview</td><td>Agent was called</td></tr>
+                <tr><td><code>llm_call</code></td><td>loop, tokens_est, duration_ms</td><td>One LLM API call</td></tr>
+                <tr><td><code>tool_call</code></td><td>loop, tool_name, args_summary, result_length, is_error</td><td>One tool execution</td></tr>
+                <tr><td><code>call_completed</code></td><td>loops_used, reply_length, total_duration_ms</td><td>Agent returned result</td></tr>
+                <tr><td><code>call_failed</code></td><td>error</td><td>Agent call failed</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>External LLM viewing: <code>tail -20 agents/xxx/call_log.jsonl</code> or <code>grep "tool_error" agents/xxx/call_log.jsonl</code></p>
+
+        <h3>2.4 Dispatch Strategy Infrastructure</h3>
+        <p>Within each dispatch strategy folder, the following files are Infrastructure:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>What AI Needs to Know</th></tr></thead>
+            <tbody>
+                <tr><td><code>dispatch_base.py</code></td><td>~478</td><td>Tool loop, LLM response parsing, staging management, status tracking</td><td>See interface table below</td></tr>
+                <tr><td><code>session_manager.py</code></td><td>~200</td><td>JSONL session CRUD + staging formatting</td><td><code>create_session()</code>, <code>append_to_session()</code>, <code>load_session()</code>, <code>list_sessions()</code>, <code>delete_session()</code>, <code>format_session_history()</code></td></tr>
+                <tr><td><code>context_injector.py</code></td><td>~80</td><td>Reads files by context_files path list, builds messages array</td><td><code>build_context(agent_id, config, project_root, user_message) → (messages, provider, model)</code></td></tr>
+                <tr><td><code>context/sliding_window.py</code></td><td>~150</td><td>Configuration-driven context trimming</td><td><code>trim_records(records, max_tokens, trim_strategy) → trimmed_records</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>dispatch_base.py key interfaces:</strong></p>
+        <pre><code>get_llm_caller(project_root) → call_llm_fn or None
+load_global_config(project_root) → dict
+resolve_llm_endpoint(provider, global_config) → (url, key)
+load_agent_tools(agent_id, project_root) → (tool_definitions, tool_functions)
+call_with_tool_loop(messages, url, key, model, call_llm_fn, tool_definitions, tool_functions, max_tool_loops) → (content, tool_history)
+write_agent_memory(agent_id, tool_history) → None
+write_staging_history(project_root, session_id) → None
+clear_staging() → None
+set_status(session_id, round_num, agent_id, agent_name, status) → None
+clear_status() → None
+get_status() → dict</code></pre>
+
+        <h3>2.5 Tube Layer Infrastructure</h3>
+
+        <h3>2.5.1 Core Engine</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>What AI Needs to Know</th></tr></thead>
+            <tbody>
+                <tr><td><code>tube/tube_runner.py</code></td><td>~370</td><td>Main loop engine: polls tubes.json, checks trigger conditions, executes steps serially (with retry and failure strategies), writes logs, manages staging data passing</td><td><code>TubeRunner(interval=15).run()</code> — runs as daemon thread in chat_server</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>Runtime mechanism key points:</strong></p>
+        <ul>
+            <li>Polls tubes.json every 15 seconds (hot-loaded, config changes don't require restart)</li>
+            <li>Each triggered tube executes in an independent thread, multiple tubes can run in parallel</li>
+            <li>running_tubes dictionary prevents duplicate triggering of the same tube</li>
+            <li>Steps default to serial: next step runs only if previous exits with code 0; non-0 follows on_fail config (stop or continue)</li>
+            <li>Supports step-level retry (retry.max + retry.delay_sec)</li>
+            <li>Inter-step data passes via staging files ($PREV_OUTPUT placeholder)</li>
+            <li>type=tube steps execute inline recursively (depth limit 5 levels)</li>
+            <li>Other type steps build commands via targets/ modules, executed as subprocesses</li>
+        </ul>
+
+        <h3>2.5.2 Pluggable Trigger Sources triggers/</h3>
+        <p>Each .py file is a trigger source type with unified interface:</p>
+        <pre><code>def check(config: dict, state: dict) -> bool</code></pre>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>Config Example</th></tr></thead>
+            <tbody>
+                <tr><td><code>triggers/cron.py</code></td><td>~44</td><td>Scheduled trigger (depends on croniter)</td><td><code>{"expr": "0 3 * * *"}</code></td></tr>
+                <tr><td><code>triggers/manual.py</code></td><td>~32</td><td>Flag file trigger (API or file creation)</td><td><code>{}</code> (no config needed)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>state fields (provided by tube_runner):</strong></p>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>now</code></td><td>datetime (UTC)</td><td>Current time</td></tr>
+                <tr><td><code>last_triggered</code></td><td>datetime or None</td><td>Last trigger time for this tube</td></tr>
+                <tr><td><code>tube_id</code></td><td>str</td><td>Current tube ID</td></tr>
+                <tr><td><code>flag_dir</code></td><td>str</td><td>Manual trigger flag file directory path</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <blockquote><p><strong>User extension:</strong> Drop a .py file in triggers/, implement <code>check()</code> interface. Zero code changes.</p></blockquote>
+
+        <h3>2.5.3 Pluggable Drive Targets targets/</h3>
+        <p>Each .py file is a drive target type with unified interface:</p>
+        <pre><code>def build_command(step: dict, project_root: str) -> list[str]</code></pre>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Lines</th><th>Role</th><th>step.type</th></tr></thead>
+            <tbody>
+                <tr><td><code>targets/agent.py</code></td><td>~34</td><td>Builds Agent subprocess command</td><td><code>"agent"</code></td></tr>
+                <tr><td><code>targets/dispatch.py</code></td><td>~40</td><td>Builds Dispatch subprocess command</td><td><code>"dispatch"</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <blockquote><p><strong>User extension:</strong> Drop a .py file in targets/, implement <code>build_command()</code> interface. Zero code changes. Exception: type=tube steps don't go through targets/ modules; they're handled inline recursively by tube_runner.</p></blockquote>
+
+        <h3>2.5.4 Tube API Endpoints</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Method</th><th>Path</th><th>Function</th></tr></thead>
+            <tbody>
+                <tr><td>GET</td><td><code>/api/tubes</code></td><td>List all tube definitions + real-time running/idle status</td></tr>
+                <tr><td>GET</td><td><code>/api/tube/status</code></td><td>Lightweight status query (id, enabled, status only)</td></tr>
+                <tr><td>POST</td><td><code>/api/tube/trigger</code></td><td>Manual trigger (body: <code>{"tube_id": "xxx"}</code>)</td></tr>
+                <tr><td>GET</td><td><code>/api/tube/log?tail=50&amp;tube_id=xxx</code></td><td>Query logs (filterable)</td></tr>
+                <tr><td>GET</td><td><code>/api/tube/log/grouped?per_tube=10</code></td><td>Return logs grouped by tube</td></tr>
+                <tr><td>DELETE</td><td><code>/api/tube/log?tube_id=xxx</code></td><td>Clear logs (can clear per tube)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>2.5.5 tube_log.jsonl Event Types</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Event</th><th>Key Fields</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td><code>runner_started</code></td><td>interval</td><td>tube_runner started</td></tr>
+                <tr><td><code>runner_stopped</code></td><td>—</td><td>tube_runner stopped</td></tr>
+                <tr><td><code>tube_triggered</code></td><td>tube_id, step_count</td><td>Tube was triggered</td></tr>
+                <tr><td><code>step_started</code></td><td>tube_id, step_index, step_type, step_target, payload</td><td>A step began</td></tr>
+                <tr><td><code>step_completed</code></td><td>tube_id, step_index, step_type, step_target, exit_code, duration_sec</td><td>A step succeeded</td></tr>
+                <tr><td><code>step_failed</code></td><td>tube_id, step_index, step_type, step_target, exit_code, duration_sec, stderr_tail</td><td>A step failed</td></tr>
+                <tr><td><code>step_retry</code></td><td>tube_id, step_index, attempt, max_attempts, delay_sec</td><td>A step retrying</td></tr>
+                <tr><td><code>tube_completed</code></td><td>tube_id, duration_sec</td><td>All steps completed</td></tr>
+                <tr><td><code>tube_stopped</code></td><td>tube_id, stopped_at_step, duration_sec</td><td>Stopped due to step failure</td></tr>
+                <tr><td><code>trigger_error</code></td><td>tube_id, trigger_type, error</td><td>Trigger check exception</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>2.6 Framework-Level Utility Tools</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Role</th><th>User</th></tr></thead>
+            <tbody>
+                <tr><td><code>generate_manifest.py</code></td><td>Scans directories to generate MANIFEST.json</td><td>External LLM via Bash</td></tr>
+                <tr><td><code>validate.py</code></td><td>Validates agent/tool/tube config legality</td><td>External LLM via Bash</td></tr>
+                <tr><td><code>auto_commit.sh</code></td><td>Git snapshot (safety net before batch modifications)</td><td>External LLM via Bash</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p>These three files are Infrastructure, but external LLMs <strong>only call them, never modify them</strong>.</p>
+
+        <hr>
+
+        <!-- Section 3 -->
+        <h2 id="adjustable">3. Adjustable Components Inventory (AI Operation Targets)</h2>
+
+        <h3>3.1 Agent Adjustable Components</h3>
+        <p>Within each <code>agents/xxx/</code> folder:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Purpose</th><th>Modification Scenarios</th></tr></thead>
+            <tbody>
+                <tr><td><code>agent_config.json</code></td><td>Model, provider, context sources, skill trigger rules</td><td>Change model, modify context file list, add/remove skill triggers</td></tr>
+                <tr><td><code>SOUL.md</code></td><td>Agent identity definition (referenced via context_files)</td><td>Change personality, role, behavioural guidelines</td></tr>
+                <tr><td><code>skills/*.md</code></td><td>Task instruction files</td><td>Add/remove instruction content</td></tr>
+                <tr><td><code>tools/*_tools.py</code></td><td>Agent's available tools</td><td>Add/remove tools (drop file = effective, auto-discovered via hot-reload)</td></tr>
+                <tr><td><code>context/sliding_window.py</code></td><td>This Agent's trimming strategy</td><td>When different trimming behaviour than default is needed</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <blockquote>
+            <p><strong>Engine code</strong> (core/direct_llm.py, core/tool_executor.py) is semi-infrastructure: not modified by default after copying from template. Only modify when the user needs this Agent to be fundamentally different from others at the engine level — this is the core promise of "possibility management."</p>
+            <p><strong>Engine modification protocol:</strong> Each agent has an independent engine copy. When modifying engine logic: 1) Modify one agent's copy and test. 2) After confirmation, <code>diff</code> against other agents' same-named files. 3) Sync individually to agents that need the same modification (not all agents need syncing — some may have special logic). 4) After syncing, run <code>python3 validate.py all</code></p>
+        </blockquote>
+
+        <h3>3.2 Dispatch Adjustable Components</h3>
+        <p>Within each <code>dispatch/xxx/</code> folder:</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Purpose</th><th>Modification Scenarios</th></tr></thead>
+            <tbody>
+                <tr><td><code>dispatch.py</code></td><td>Orchestration logic</td><td>Change collaboration mode (round-robin → debate → star topology → serial pipeline)</td></tr>
+                <tr><td><code>dispatch_config.json</code></td><td>Participating agents, rounds, trimming strategy, context_files</td><td>Add/remove agents, change rounds, change context sources</td></tr>
+                <tr><td><code>rules/*.md</code></td><td>Agent's role definition in this collaboration</td><td>Change agent's role in collaboration</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>Key design:</strong> Dispatch does not call Agent's call_agent. It directly calls <code>lib/llm_client.call_llm()</code>, assembling context itself via context_injector. The Agent folder serves Dispatch only as a data source (SOUL.md, rules, config), not as an executor.</p>
+
+        <h3>3.3 Tube Adjustable Components</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Purpose</th><th>Modification Scenarios</th></tr></thead>
+            <tbody>
+                <tr><td><code>tube/tubes.json</code></td><td>Declarative definition of all tubes — single source of topology truth</td><td>Add/remove tubes, change triggers, change steps, change signal topology</td></tr>
+                <tr><td><code>pages/tube-dashboard.html</code></td><td>Tube visual monitoring page</td><td>Customise UI display</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>3.4 UI Adjustable Components</h3>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File</th><th>Purpose</th><th>Modification Scenarios</th></tr></thead>
+            <tbody>
+                <tr><td><code>index.html</code></td><td>Yellow pages, feature entry index</td><td>Generally unchanged (auto-discovery)</td></tr>
+                <tr><td><code>chat.html</code></td><td>Basic chat interface</td><td>Customise chat UI</td></tr>
+                <tr><td><code>pages/*.html</code></td><td>User-built feature pages</td><td>Add page = drop file</td></tr>
+                <tr><td><code>dispatch/xxx/*.html</code></td><td>Dispatch-specific UI</td><td>Customise collaboration interface</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- Section 4 -->
+        <h2 id="decision-tree">4. AI Operations Decision Tree</h2>
+
+        <pre><code>Received requirement
+  │
+  ├─ Need a new Agent?
+  │   → bash auto_commit.sh "snapshot before adding agent"
+  │   → cp -r template/ agents/xxx/
+  │   → Edit SOUL.md
+  │   → Edit agent_config.json (set context_files, skills, model)
+  │   → Don't touch engine code
+  │   → python3 validate.py agent xxx
+  │   → python3 generate_manifest.py
+  │
+  ├─ Need to change Agent's loaded files?
+  │   → Edit agent_config.json's context_files array
+  │   → Add path = add file, remove path = remove file
+  │   → Don't touch direct_llm.py
+  │
+  ├─ Need to add tools to Agent?
+  │   → Reference template/tools/TOOL_CONTRACT.md for format
+  │   → Drop *_tools.py file in agents/xxx/tools/
+  │   → Hot-reload auto-discovery, no code changes
+  │   → python3 validate.py tool agents/xxx/tools/new_tools.py
+  │
+  ├─ Need Agent to execute shell commands?
+  │   → cp template/tools/shell_tools.py agents/xxx/tools/
+  │
+  ├─ Need Agent to trigger Tubes?
+  │   → cp template/tools/tube_tools.py agents/xxx/tools/
+  │
+  ├─ Need Agent to initiate multi-Agent collaboration?
+  │   → cp template/tools/dispatch_tools.py agents/xxx/tools/
+  │
+  ├─ Need to add skills to Agent?
+  │   → Drop .md file in agents/xxx/skills/
+  │   → Method A: Add trigger rule in agent_config.json skills array (exact match)
+  │   → Method B: Add entry in skill_router.md (semantic trigger, needs file_tools)
+  │   → Method C: Add directly to context_files (full injection, always loaded)
+  │
+  ├─ Need a new Dispatch strategy?
+  │   → cp -r dispatch/roundtable/ dispatch/xxx/
+  │   → Edit dispatch.py ORCHESTRATION LOGIC section
+  │   → Edit dispatch_config.json, rules/
+  │   → Don't touch dispatch_base.py, session_manager.py, context_injector.py
+  │
+  ├─ Need to adjust signal topology?
+  │   → Edit tube/tubes.json
+  │   → Don't touch tube_runner.py, triggers/, targets/
+  │   → python3 validate.py tube
+  │
+  ├─ Need a new Tube trigger source type?
+  │   → Drop .py file in tube/triggers/, implement check(config, state) → bool
+  │   → Use filename as type in tubes.json
+  │   → Don't touch tube_runner.py
+  │
+  ├─ Need a new Tube drive target type?
+  │   → Drop .py file in tube/targets/, implement build_command(step, project_root) → list
+  │   → Use filename as type in steps of tubes.json
+  │   → Don't touch tube_runner.py
+  │
+  ├─ Need to manually trigger a Tube?
+  │   → curl -X POST http://127.0.0.1:5000/api/tube/trigger \
+  │       -H "Content-Type: application/json" \
+  │       -d '{"tube_id": "xxx"}'
+  │   → or: touch tube/manual_triggers/xxx
+  │   → or: Agent triggers via tube_tools.py
+  │
+  ├─ Need to check system runtime status?
+  │   → Agent chat history: tail agents/xxx/history.jsonl
+  │   → Agent run log: tail agents/xxx/call_log.jsonl
+  │   → Tube execution log: tail tube/tube_log.jsonl
+  │   → Tube step output: Read tube/staging/{tube_id}_{timestamp}/
+  │   → Error troubleshooting: grep "error\|failed" tube/tube_log.jsonl
+  │   → Global validation: python3 validate.py all
+  │
+  ├─ Need to modify Agent engine logic?
+  │   → bash auto_commit.sh "snapshot before engine modification"
+  │   → Modify one agent's core/ copy first and test
+  │   → diff against other agents' same-named files
+  │   → Sync individually (note: not all agents need syncing)
+  │   → python3 validate.py all
+  │
+  ├─ Need a new UI page?
+  │   → Drop .html file in pages/
+  │   → Auto-discovered by yellow pages
+  │
+  ├─ Need to rollback changes?
+  │   → git diff → see what changed
+  │   → git log --oneline -10 → see snapshot history
+  │   → git checkout -- {file} → restore single file
+  │   → git revert HEAD → rollback most recent commit
+  │
+  └─ None of the above?
+      → May need to touch Infrastructure
+      → First confirm: can this really not be achieved via Adjustable components?
+      → If confirmed, read the corresponding Infrastructure source code, understand, then modify
+      → After modification: python3 validate.py all to verify no other modules affected</code></pre>
+
+        <hr>
+
+        <!-- Section 9 -->
+        <h2>5. Agent Capability Three-Layer Model Quick Reference</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Layer</th><th>Carrier</th><th>Config Location</th><th>Load Timing</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td>Identity &amp; Knowledge</td><td>.md / .txt files</td><td>agent_config.json <code>context_files</code></td><td>Every call</td><td>Information the Agent always knows</td></tr>
+                <tr><td>Conditional Instructions</td><td>.md files + trigger rules</td><td>agent_config.json <code>skills</code></td><td>On keyword match</td><td>Instructions injected for specific scenarios</td></tr>
+                <tr><td>Execution Capability</td><td>*_tools.py files</td><td>Auto-discovered (drop file = effective, hot-reload)</td><td>Every call</td><td>Operations the Agent can perform</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <!-- Section 10 -->
+        <h2>6. File Change Impact Scope Quick Reference</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File Changed</th><th>Impact Scope</th></tr></thead>
+            <tbody>
+                <tr><td>agents/xxx/SOUL.md</td><td>That Agent only</td></tr>
+                <tr><td>agents/xxx/agent_config.json</td><td>That Agent only</td></tr>
+                <tr><td>agents/xxx/skills/*.md</td><td>That Agent only</td></tr>
+                <tr><td>agents/xxx/tools/*.py</td><td>That Agent only (hot-reload, effective next call)</td></tr>
+                <tr><td>agents/xxx/core/direct_llm.py</td><td>That Agent only (others have independent copies, unaffected)</td></tr>
+                <tr><td>dispatch/xxx/dispatch.py</td><td>That Dispatch strategy only</td></tr>
+                <tr><td>dispatch/xxx/dispatch_config.json</td><td>That Dispatch strategy only</td></tr>
+                <tr><td>dispatch/xxx/rules/*.md</td><td>That Dispatch strategy only</td></tr>
+                <tr><td>tube/tubes.json</td><td>Signal topology (does not affect Agent and Dispatch internals)</td></tr>
+                <tr><td>tube/triggers/new.py</td><td>Only tubes using that trigger type</td></tr>
+                <tr><td>tube/targets/new.py</td><td>Only tubes using that target type</td></tr>
+                <tr><td>pages/*.html</td><td>That page only</td></tr>
+                <tr><td>MANIFEST.json</td><td>No runtime impact (read-only for external LLMs)</td></tr>
+                <tr><td>lib/llm_client.py</td><td><strong>Global</strong> — all Agent and Dispatch LLM calls</td></tr>
+                <tr><td>chat_server.py</td><td><strong>Global</strong> — all API routes + Tube Runner startup</td></tr>
+                <tr><td>tube/tube_runner.py</td><td><strong>Global</strong> — all Tube polling and execution</td></tr>
+                <tr><td>template/</td><td><strong>No direct impact</strong> — only affects future new Agents</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>Key characteristic:</strong> The first 14 rows' impact scope is all "that module only" or "only tubes using it." This is the value of module isolation — AI can safely make local modifications with no global side effects.</p>
+        </div>
+
+        <hr>
+
+        <!-- Section 11 -->
+        <h2>7. Hot-Reload Mechanism Quick Reference</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>File Type</th><th>Hot-Reload Method</th><th>Effective Timing</th></tr></thead>
+            <tbody>
+                <tr><td>agent_config.json</td><td><code>_load_config()</code> re-reads on every call_agent()</td><td>Next agent call</td></tr>
+                <tr><td>SOUL.md / context_files</td><td><code>_load_context_files()</code> re-reads every time</td><td>Next agent call</td></tr>
+                <tr><td>tools/*_tools.py</td><td>tool_executor checks tools/ directory mtime</td><td>Next agent call</td></tr>
+                <tr><td>tubes.json</td><td>tube_runner <code>_load_tubes()</code> on every polling cycle</td><td>Next polling cycle (≤15 seconds)</td></tr>
+                <tr><td>dispatch_config.json</td><td>Re-read on every dispatch call</td><td>Next dispatch call</td></tr>
+                <tr><td>rules/*.md</td><td>Re-read via context_injector every time</td><td>Next dispatch call</td></tr>
+                <tr><td>pages/*.html</td><td>Flask route re-reads on every request</td><td>Next page visit</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>Conclusion: After an external LLM modifies files, no server restart is needed. All Adjustable components are hot-loaded.</strong></p>
+        </div>
+
+        <hr>
+
+        <!-- Section 12 -->
+        <h2>8. Dangerous Operations Checklist (Always Git Commit Before Modifying)</h2>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Operation</th><th>Risk Level</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td>Delete agents/ directory</td><td>High</td><td>Agent data and history permanently lost</td></tr>
+                <tr><td>Modify config.json provider key</td><td>High</td><td>All agents' LLM calls may fail</td></tr>
+                <tr><td>Modify any agent's core/direct_llm.py</td><td>Medium</td><td>Affects only that agent, but may break core loop</td></tr>
+                <tr><td>Modify dispatch/xxx/dispatch_base.py</td><td>High</td><td>Affects all collaboration sessions for that strategy</td></tr>
+                <tr><td>Modify lib/llm_client.py</td><td>High</td><td>Affects all global LLM calls</td></tr>
+                <tr><td>Modify tube/tube_runner.py</td><td>High</td><td>Affects all global Tube execution</td></tr>
+                <tr><td>Delete or heavily modify existing tubes in tubes.json</td><td>Medium</td><td>May interrupt running automation flows</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p><strong>Before operation:</strong> <code>bash auto_commit.sh "description"</code><br>
+        <strong>After operation:</strong> <code>python3 validate.py all</code></p>
+
+        <hr>
+
+        <!-- Section 13 -->
+        <h2>9. External LLM Full Takeover Acceptance Scenario</h2>
+
+        <pre><code>1. Read MANIFEST.json
+   → Understand what agents, tubes, dispatches the system has
+
+2. Read PLAYBOOK.md
+   → Know how to operate
+
+3. Bash: bash auto_commit.sh "pre-modification snapshot"
+   → Safety backup
+
+4. Bash: cp -r template/ agents/monitor/
+   → Create new agent
+
+5. Write agents/monitor/SOUL.md
+   → Write "You are a website monitoring agent, check site status when called..."
+
+6. Edit agents/monitor/agent_config.json
+   → Set display_name, model
+
+7. Read template/tools/TOOL_CONTRACT.md
+   → Understand tool file format
+
+8. Write agents/monitor/tools/http_tools.py
+   → Write HTTP check tool conforming to contract
+
+9. Bash: python3 validate.py agent monitor
+   → Output "OK"
+
+10. Edit tube/tubes.json
+    → Add a tube triggering monitor agent every 10 minutes
+
+11. Bash: python3 validate.py tube
+    → Output "OK"
+
+12. Bash: python3 generate_manifest.py
+    → Update MANIFEST.json
+
+13. Bash: bash auto_commit.sh "Added monitor agent and scheduled check tube"
+    → Save modifications
+
+14. After 10 minutes:
+    Read tube/tube_log.jsonl → Confirm tube triggered
+    Read agents/monitor/call_log.jsonl → Confirm agent ran
+
+15. If issues:
+    Bash: git diff → See what changed
+    Bash: git revert HEAD → Rollback</code></pre>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

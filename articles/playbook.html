@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAF AI-Piloted Edition — LLM Operations Playbook</title>
+    <meta name="article-date" content="2026-04-02">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="Complete operations manual for external LLMs to manage IAF through file read/write and shell commands. Agent, Tool, Tube, Dispatch management and safety protocols.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg-deep:#0c0c18;--bg-surface:#141428;--bg-card:#1a1a32;--bg-card-hover:#22224a;--border-dim:#2a2a4a;--border-glow:#00e5a0;--text-bright:#f5f5f0;--text-primary:#e0e0e8;--text-secondary:#8888a0;--text-dim:#55556a;--accent-cyan:#00e5a0;--accent-gold:#f0c866;--accent-blue:#5b8def;--accent-pink:#e06090;--bold-color:#ffd866;--font-pixel:'VT323',monospace;--font-mono:'Share Tech Mono','IBM Plex Mono',monospace;--font-body:'IBM Plex Mono',monospace}
+        html{font-size:16px;scroll-behavior:smooth}body{background:var(--bg-deep);color:var(--text-bright);font-family:var(--font-body);line-height:1.75;min-height:100vh}body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999}
+        .top-bar{border-bottom:1px solid var(--border-dim);padding:12px 0;position:sticky;top:0;background:var(--bg-deep);z-index:100}.top-bar-inner{max-width:860px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.nav-links{display:flex;gap:20px;align-items:center}.nav-links a{color:var(--text-secondary);text-decoration:none;font-family:var(--font-mono);font-size:.85rem;transition:color .2s}.nav-links a:hover{color:var(--accent-cyan)}.theory-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent-gold)!important;font-family:var(--font-mono);font-size:.85rem;text-decoration:none;padding:4px 10px;border:1px solid rgba(240,200,102,.3);border-radius:3px;transition:all .2s}.theory-link:hover{background:rgba(240,200,102,.1);border-color:var(--accent-gold)}
+        .article{max-width:860px;margin:0 auto;padding:48px 24px 80px}.article-header{margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid var(--accent-gold)}.article-title{font-family:var(--font-pixel);font-size:clamp(2rem,5vw,3rem);color:var(--accent-gold);letter-spacing:.05em;line-height:1.2;text-shadow:0 0 25px rgba(240,200,102,.25)}.article-tagline{font-family:var(--font-mono);font-size:.95rem;color:var(--accent-cyan);margin-top:16px;line-height:1.6;font-weight:600}.article-meta{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim);margin-top:12px}.article-meta .badge{display:inline-block;padding:2px 8px;border:1px solid var(--accent-gold);color:var(--accent-gold);font-size:.7rem;margin-left:8px}
+        .article h2{font-family:var(--font-pixel);font-size:1.8rem;color:var(--accent-cyan);margin:56px 0 20px;padding-bottom:8px;border-bottom:1px solid var(--border-dim);letter-spacing:.03em}.article h3{font-family:var(--font-pixel);font-size:1.35rem;color:var(--accent-gold);margin:36px 0 14px}.article p{font-size:.9rem;color:var(--text-bright);margin-bottom:16px;line-height:1.8}.article strong{color:var(--bold-color);font-weight:600}.article a{color:var(--accent-cyan);text-decoration:none}.article a:hover{text-decoration:underline}
+        .article blockquote{border-left:3px solid var(--accent-gold);background:rgba(240,200,102,.06);padding:16px 20px;margin:24px 0;font-size:.88rem;color:#d0d0c8;line-height:1.7}
+        .article ul,.article ol{margin:12px 0 20px 20px}.article li{font-size:.9rem;color:var(--text-bright);margin-bottom:8px;line-height:1.7}.article li strong{color:var(--accent-gold)}
+        .article pre{background:#0e0e1c;border:1px solid var(--border-dim);padding:18px 20px;margin:16px 0 24px;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6;color:#c8c8d0}.article code{font-family:var(--font-mono);font-size:.85rem;color:var(--accent-cyan);background:rgba(0,229,160,.08);padding:1px 5px;border-radius:2px}.article pre code{background:none;padding:0;color:#c8c8d0}
+        .table-wrap{overflow-x:auto;margin:16px 0 28px}.article table{width:100%;border-collapse:collapse;font-size:.82rem}.article thead th{background:var(--bg-card);color:var(--accent-cyan);font-family:var(--font-mono);font-weight:600;text-align:left;padding:10px 14px;border:1px solid var(--border-dim);white-space:nowrap}.article tbody td{padding:9px 14px;border:1px solid var(--border-dim);color:var(--text-bright);vertical-align:top}.article tbody tr:nth-child(even){background:rgba(26,26,50,.5)}.article tbody td:first-child{color:var(--accent-gold);font-weight:500;white-space:nowrap}
+        .highlight-box{background:var(--bg-card);border:1px solid var(--accent-cyan);padding:20px 24px;margin:24px 0}.highlight-box p{margin-bottom:8px}.highlight-box p:last-child{margin-bottom:0}
+        .article hr{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border-dim),transparent);margin:48px 0}
+        .footer{max-width:860px;margin:0 auto;padding:24px;border-top:1px solid var(--border-dim);text-align:center}.footer-text{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim)}.footer-text a{color:var(--text-secondary);text-decoration:none}.footer-text a:hover{color:var(--accent-cyan)}.footer-links{margin-top:8px;display:flex;justify-content:center;gap:20px}
+        @media(max-width:600px){.article{padding:32px 16px 60px}.article h2{font-size:1.5rem;margin-top:40px}.article h3{font-size:1.2rem}.top-bar-inner{flex-direction:column;align-items:flex-start;gap:10px}.nav-links{gap:12px;flex-wrap:wrap}}
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#quick-start">Quick Start</a>
+                <a href="#agent">Agent</a>
+                <a href="#tools">Tools</a>
+                <a href="#tube">Tube</a>
+                <a href="#dispatch">Dispatch</a>
+                <a href="#safety">Safety</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">📖 Intelligenism Full Theory ↗</a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">LLM Operations Playbook</h1>
+            <p class="article-tagline">For external LLMs: after reading this file, you will know how to fully manage IAF through file read/write and shell commands.</p>
+            <p class="article-meta">2026-04-02 <span class="badge">AI-PILOTED v1.0</span></p>
+        </header>
+
+        <h2 id="quick-start">Quick Start</h2>
+        <ol>
+            <li><code>Read MANIFEST.json</code> — Understand what agents, dispatches, and tubes currently exist in the system</li>
+            <li><code>Read PLAYBOOK.md</code> — This file you are reading now</li>
+            <li>Before any modification, run <code>bash auto_commit.sh "description"</code> to create a safety snapshot</li>
+            <li>After modification, run <code>python3 validate.py all</code> to validate</li>
+            <li>Run <code>python3 generate_manifest.py</code> to update MANIFEST.json</li>
+        </ol>
+
+        <hr>
+
+        <h2 id="agent">1. Agent Management</h2>
+
+        <h3>Create a New Agent</h3>
+        <pre><code>cp -r template/ agents/{agent_id}/</code></pre>
+        <p>Then:</p>
+        <ul>
+            <li>Edit <code>agents/{agent_id}/agent_config.json</code> — set display_name, model</li>
+            <li>Edit <code>agents/{agent_id}/SOUL.md</code> — define personality and instructions</li>
+            <li>Run <code>python3 validate.py agent {agent_id}</code> to validate</li>
+            <li>Run <code>python3 generate_manifest.py</code> to update the map</li>
+        </ul>
+
+        <h3>Modify Agent Behaviour</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Modification Target</th><th>File to Edit</th></tr></thead>
+            <tbody>
+                <tr><td>Personality / Instructions</td><td><code>agents/{id}/SOUL.md</code></td></tr>
+                <tr><td>Model / Provider</td><td><code>agents/{id}/agent_config.json</code></td></tr>
+                <tr><td>Add context files</td><td><code>agent_config.json</code> → <code>context_files</code> array</td></tr>
+                <tr><td>Add skill triggers</td><td><code>agent_config.json</code> → <code>skills</code> array</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Delete an Agent</h3>
+        <ol>
+            <li>Delete the entire <code>agents/{agent_id}/</code> directory</li>
+            <li>Check and remove references in <code>dispatch/*/dispatch_config.json</code> and <code>tube/tubes.json</code></li>
+            <li>Run <code>python3 generate_manifest.py</code></li>
+        </ol>
+
+        <hr>
+
+        <h2 id="tools">2. Tool Management</h2>
+
+        <h3>Add a Tool</h3>
+        <ol>
+            <li>Read <code>TOOL_CONTRACT.md</code> to understand format conventions</li>
+            <li>Create <code>{name}_tools.py</code> in <code>agents/{id}/tools/</code></li>
+            <li>No code changes needed — auto-discovery mechanism loads it on next call</li>
+            <li>Run <code>python3 validate.py tool agents/{id}/tools/{name}_tools.py</code> to validate</li>
+        </ol>
+
+        <h3>Remove a Tool</h3>
+        <p>Simply delete the <code>agents/{id}/tools/{name}_tools.py</code> file.</p>
+
+        <hr>
+
+        <h2>3. Agent Engine Modification (Important)</h2>
+        <p>Each agent has its own independent copy of <code>core/direct_llm.py</code> and <code>core/tool_executor.py</code>.</p>
+
+        <h3>Modification Procedure</h3>
+        <ol>
+            <li>Modify one agent's copy first and test</li>
+            <li>After confirmation, use <code>diff</code> to compare against other agents' same-named files</li>
+            <li>Sync individually to agents that need the same modification (not all agents need syncing)</li>
+            <li>Run <code>python3 validate.py all</code> for global validation</li>
+        </ol>
+
+        <div class="highlight-box">
+            <p><strong>Important:</strong> Always run <code>bash auto_commit.sh</code> to create a snapshot before modifying engine files.</p>
+            <p>If the change should apply to all future new agents, also sync the modification to <code>template/core/</code> template files.</p>
+        </div>
+
+        <hr>
+
+        <h2 id="tube">4. Tube Management</h2>
+
+        <h3>Create a Tube</h3>
+        <p>Edit <code>tube/tubes.json</code>, append a new entry:</p>
+        <pre><code>{
+  "id": "my_tube",
+  "enabled": true,
+  "triggers": [
+    {"type": "cron", "config": {"expr": "*/10 * * * *"}},
+    {"type": "manual"}
+  ],
+  "steps": [
+    {
+      "type": "agent",
+      "id": "charlie",
+      "mode": "batch",
+      "payload": {"prompt": "Execute task..."},
+      "retry": {"max": 2, "delay_sec": 30},
+      "on_fail": "continue"
+    }
+  ]
+}</code></pre>
+        <ul>
+            <li>Changes auto-effective every 15 seconds (TubeRunner hot-loads)</li>
+            <li>Run <code>python3 validate.py tube</code> to validate</li>
+        </ul>
+
+        <h3>Manually Trigger a Tube</h3>
+        <pre><code># Method A: Create flag file
+touch tube/manual_triggers/{tube_id}.flag
+
+# Method B: API call
+curl -X POST http://127.0.0.1:5000/api/tube/trigger \
+  -H "Content-Type: application/json" \
+  -d '{"tube_id": "my_tube"}'</code></pre>
+
+        <h3>Step Configuration</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Field</th><th>Description</th><th>Default</th></tr></thead>
+            <tbody>
+                <tr><td><code>retry</code></td><td>Retry config: <code>{"max": N, "delay_sec": N}</code></td><td>No retry</td></tr>
+                <tr><td><code>on_fail</code></td><td>Failure handling: <code>"stop"</code> / <code>"continue"</code></td><td><code>"stop"</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <h2 id="dispatch">5. Dispatch Management</h2>
+
+        <h3>Add an Agent to an Existing Strategy</h3>
+        <p>Edit <code>dispatch/{strategy}/dispatch_config.json</code>:</p>
+        <ul>
+            <li>Add agent entry in the <code>agents</code> object</li>
+            <li>Add agent_id to the <code>turn_order</code> array</li>
+        </ul>
+
+        <h3>Create a New Dispatch Strategy</h3>
+        <pre><code>cp -r dispatch/roundtable/ dispatch/{name}/</code></pre>
+        <p>Then modify:</p>
+        <ul>
+            <li><code>dispatch.py</code> — Orchestration logic (only modify the ORCHESTRATION LOGIC section)</li>
+            <li><code>dispatch_config.json</code> — Participating agents and settings</li>
+            <li><code>rules/*.md</code> — Role definitions</li>
+        </ul>
+
+        <hr>
+
+        <h2>6. Status Viewing</h2>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>What to View</th><th>Operation</th></tr></thead>
+            <tbody>
+                <tr><td>System overview</td><td><code>Read MANIFEST.json</code></td></tr>
+                <tr><td>Agent chat history</td><td><code>Read agents/{id}/history.jsonl</code></td></tr>
+                <tr><td>Agent run log</td><td><code>Read agents/{id}/call_log.jsonl</code></td></tr>
+                <tr><td>Tube execution log</td><td><code>Read tube/tube_log.jsonl</code></td></tr>
+                <tr><td>Inter-step data</td><td><code>Read tube/staging/{tube_id}/step_{n}.out</code></td></tr>
+                <tr><td>Troubleshoot errors</td><td><code>grep "error\|failed" tube/tube_log.jsonl</code></td></tr>
+                <tr><td>Real-time Tube status</td><td><code>GET http://127.0.0.1:5000/api/tube/status</code></td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <hr>
+
+        <h2>7. Global Configuration</h2>
+        <p>Edit <code>config.json</code>:</p>
+        <ul>
+            <li>Add new provider to the <code>providers</code> object</li>
+            <li>Modify <code>default_provider</code> or <code>default_model</code></li>
+        </ul>
+
+        <hr>
+
+        <h2 id="safety">8. Safety Operations</h2>
+
+        <h3>Create Safety Snapshot</h3>
+        <pre><code>bash auto_commit.sh "modification description"</code></pre>
+
+        <h3>Dangerous Operations Checklist (Always Snapshot Before)</h3>
+        <ul>
+            <li>Deleting any directory under <code>agents/</code></li>
+            <li>Modifying any agent's <code>core/direct_llm.py</code> or <code>core/tool_executor.py</code></li>
+            <li>Modifying <code>config.json</code> provider keys</li>
+            <li>Modifying <code>dispatch/*/dispatch.py</code> or <code>dispatch_base.py</code></li>
+            <li>Deleting or heavily modifying existing tube definitions in <code>tube/tubes.json</code></li>
+            <li>Modifying shared infrastructure code under <code>lib/</code></li>
+        </ul>
+
+        <h3>Rollback</h3>
+        <pre><code>git diff          # See what changed
+git revert HEAD   # Rollback most recent commit</code></pre>
+
+        <hr>
+
+        <h2>9. File Structure Quick Reference</h2>
+        <pre><code>IAF_AI_Piloted/
+├── MANIFEST.json              # Auto-generated system map
+├── PLAYBOOK.md                # This operations manual
+├── TOOL_CONTRACT.md           # Tool file format contract
+├── config.json                # Global provider/model configuration
+├── validate.py                # Validation script
+├── generate_manifest.py       # MANIFEST generator
+├── auto_commit.sh             # Git safety snapshot
+├── chat_server.py             # Flask service entry point
+├── template/                  # Agent template (copy to create new agent)
+│   ├── agent_config.json
+│   ├── SOUL.md
+│   ├── core/direct_llm.py
+│   ├── core/tool_executor.py
+│   └── tools/*_tools.py
+├── agents/{id}/               # Individual Agent instances
+├── dispatch/{strategy}/       # Multi-Agent collaboration strategies
+├── tube/
+│   ├── tubes.json             # Tube definitions
+│   ├── tube_runner.py         # Tube engine
+│   ├── tube_log.jsonl         # Execution log
+│   ├── triggers/              # Trigger modules
+│   ├── targets/               # Target modules
+│   └── staging/               # Inter-step data passing
+└── lib/                       # Shared infrastructure</code></pre>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">INTELLIGENISM.CLUB — Built by <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a></p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

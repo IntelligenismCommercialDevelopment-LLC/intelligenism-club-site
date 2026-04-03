@@ -1,10 +1,24 @@
 [
   {
-    "id": "iaf-ai-operability-edition",
-    "title": "IAF AI Operability Edition — Architecture Overview",
+    "id": "architecture_map",
+    "title": "IAF Architecture Map — AI Operations Navigation Guide",
+    "date": "2026-04-02",
+    "category": "doc",
+    "description": "Navigation guide for external LLMs taking over IAF. Which files to touch, which to leave alone, and where to modify."
+  },
+  {
+    "id": "iaf-ai-piloted_edition",
+    "title": "IAF AI-Piloted Edition — Architecture Overview",
     "date": "2026-04-02",
     "category": "doc",
     "description": "A multi-agent framework purpose-built for AI agents to read, modify, deploy, and monitor autonomously through file system operations alone."
+  },
+  {
+    "id": "playbook",
+    "title": "IAF AI-Piloted Edition — LLM Operations Playbook",
+    "date": "2026-04-02",
+    "category": "doc",
+    "description": "Complete operations manual for external LLMs to manage IAF through file read/write and shell commands. Agent, Tool, Tube, Dispatch management and safety protocols."
   },
   {
     "id": "iaf-architecture",
