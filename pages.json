@@ -1,5 +1,12 @@
 [
   {
+    "id": "roadmap",
+    "title": "Intelligenism Ecosystem — Roadmap",
+    "date": "2026-04-03",
+    "category": "doc",
+    "description": "Development roadmap for the Intelligenism ecosystem: IAF framework, AIO system, Agent Werewolf, and beyond."
+  },
+  {
     "id": "architecture_map",
     "title": "IAF Architecture Map — AI Operations Navigation Guide",
     "date": "2026-04-02",

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligenism Ecosystem — Roadmap</title>
+    <meta name="article-date" content="2026-04-03">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="Development roadmap for the Intelligenism ecosystem: IAF framework, AIO system, Agent Werewolf, and beyond.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg-deep:#0c0c18;--bg-surface:#141428;--bg-card:#1a1a32;--bg-card-hover:#22224a;--border-dim:#2a2a4a;--border-glow:#00e5a0;--text-bright:#f5f5f0;--text-primary:#e0e0e8;--text-secondary:#8888a0;--text-dim:#55556a;--accent-cyan:#00e5a0;--accent-gold:#f0c866;--accent-blue:#5b8def;--accent-pink:#e06090;--bold-color:#ffd866;--font-pixel:'VT323',monospace;--font-mono:'Share Tech Mono','IBM Plex Mono',monospace;--font-body:'IBM Plex Mono',monospace}
+        html{font-size:16px;scroll-behavior:smooth}body{background:var(--bg-deep);color:var(--text-bright);font-family:var(--font-body);line-height:1.75;min-height:100vh}body::after{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999}
+        .top-bar{border-bottom:1px solid var(--border-dim);padding:12px 0;position:sticky;top:0;background:var(--bg-deep);z-index:100}.top-bar-inner{max-width:860px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}.nav-links{display:flex;gap:20px;align-items:center}.nav-links a{color:var(--text-secondary);text-decoration:none;font-family:var(--font-mono);font-size:.85rem;transition:color .2s}.nav-links a:hover{color:var(--accent-cyan)}.theory-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent-gold)!important;font-family:var(--font-mono);font-size:.85rem;text-decoration:none;padding:4px 10px;border:1px solid rgba(240,200,102,.3);border-radius:3px;transition:all .2s}.theory-link:hover{background:rgba(240,200,102,.1);border-color:var(--accent-gold)}
+        .article{max-width:860px;margin:0 auto;padding:48px 24px 80px}.article-header{margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid var(--accent-gold)}.article-title{font-family:var(--font-pixel);font-size:clamp(2rem,5vw,3rem);color:var(--accent-gold);letter-spacing:.05em;line-height:1.2;text-shadow:0 0 25px rgba(240,200,102,.25)}.article-tagline{font-family:var(--font-mono);font-size:.95rem;color:var(--accent-cyan);margin-top:16px;line-height:1.6;font-weight:600}.article-meta{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim);margin-top:12px}.article-meta .badge{display:inline-block;padding:2px 8px;border:1px solid var(--accent-gold);color:var(--accent-gold);font-size:.7rem;margin-left:8px}
+        .article h2{font-family:var(--font-pixel);font-size:1.8rem;color:var(--accent-cyan);margin:56px 0 20px;padding-bottom:8px;border-bottom:1px solid var(--border-dim);letter-spacing:.03em}.article h3{font-family:var(--font-pixel);font-size:1.35rem;color:var(--accent-gold);margin:36px 0 14px}.article p{font-size:.9rem;color:var(--text-bright);margin-bottom:16px;line-height:1.8}.article strong{color:var(--bold-color);font-weight:600}.article a{color:var(--accent-cyan);text-decoration:none}.article a:hover{text-decoration:underline}
+        .article ul,.article ol{margin:12px 0 20px 20px}.article li{font-size:.9rem;color:var(--text-bright);margin-bottom:8px;line-height:1.7}.article li strong{color:var(--accent-gold)}
+        .article hr{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border-dim),transparent);margin:48px 0}
+        .status-list{list-style:none;margin-left:0;padding:0}.status-list li{padding:8px 0;font-size:.9rem;border-bottom:1px solid rgba(42,42,74,.5)}.status-list li:last-child{border-bottom:none}.status-done{color:var(--accent-cyan)}.status-wip{color:var(--accent-gold)}.status-planned{color:var(--text-secondary)}
+        .highlight-box{background:var(--bg-card);border:1px solid var(--accent-cyan);padding:20px 24px;margin:24px 0}.highlight-box p{margin-bottom:8px}.highlight-box p:last-child{margin-bottom:0}
+        .footer{max-width:860px;margin:0 auto;padding:24px;border-top:1px solid var(--border-dim);text-align:center}.footer-text{font-family:var(--font-mono);font-size:.75rem;color:var(--text-dim)}.footer-text a{color:var(--text-secondary);text-decoration:none}.footer-text a:hover{color:var(--accent-cyan)}.footer-links{margin-top:8px;display:flex;justify-content:center;gap:20px}
+        @media(max-width:600px){.article{padding:32px 16px 60px}.article h2{font-size:1.5rem;margin-top:40px}.article h3{font-size:1.2rem}.top-bar-inner{flex-direction:column;align-items:flex-start;gap:10px}.nav-links{gap:12px;flex-wrap:wrap}}
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#completed">Completed</a>
+                <a href="#in-progress">In Progress</a>
+                <a href="#planned">Planned</a>
+                <a href="#vision">Vision</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">Roadmap</h1>
+            <p class="article-tagline">Development roadmap for the Intelligenism ecosystem — framework, tools, community, and beyond.</p>
+            <p class="article-meta">Last updated: 2026-04-03 <span class="badge">LIVING DOCUMENT</span></p>
+        </header>
+
+        <!-- Completed -->
+        <h2 id="completed">✅ Completed</h2>
+
+        <h3>IAF General Edition v1.0</h3>
+        <ul class="status-list">
+            <li class="status-done">✓ Agent Layer — independent agent runtime with five-layer message assembly, tool auto-discovery, skill triggers</li>
+            <li class="status-done">✓ Dispatch Layer — multi-agent collaboration orchestration with pluggable strategies (roundtable as reference implementation)</li>
+            <li class="status-done">✓ Tube Layer — signal topology engine with cron/manual triggers, serial step execution, pluggable triggers and targets</li>
+            <li class="status-done">✓ UI Layer — auto-discovery HTML pages, chat interface, tube dashboard</li>
+            <li class="status-done">✓ Pure Python stack — Flask + requests + croniter, single command startup</li>
+            <li class="status-done">✓ ~2,000 lines of code, complete four-layer architecture</li>
+        </ul>
+
+        <h3>IAF AI-Piloted Edition v1.0</h3>
+        <ul class="status-list">
+            <li class="status-done">✓ MANIFEST.json — auto-generated system map, one read to understand entire system state</li>
+            <li class="status-done">✓ PLAYBOOK.md — complete operations manual mapping every intent to file operations</li>
+            <li class="status-done">✓ Architecture Map — AI operations navigation guide with Infrastructure/Adjustable classification</li>
+            <li class="status-done">✓ validate.py — CLI validation for agents, tools, tubes</li>
+            <li class="status-done">✓ TOOL_CONTRACT.md — tool file format specification for AI-generated tools</li>
+            <li class="status-done">✓ call_log.jsonl — structured execution logging per agent</li>
+            <li class="status-done">✓ Tool hot-reload — auto-discovery on file change, zero restart</li>
+            <li class="status-done">✓ auto_commit.sh — Git safety snapshots before modifications</li>
+            <li class="status-done">✓ Tube step-level retry + on_fail strategies + inter-step data passing via staging</li>
+        </ul>
+
+        <h3>AITF Protocol v4.0</h3>
+        <ul class="status-list">
+            <li class="status-done">✓ Agent Interaction Text Format — standardised language for agent-to-agent communication</li>
+            <li class="status-done">✓ Unified read/write format — same rules govern input and output</li>
+        </ul>
+
+        <h3>Intelligenism Theory</h3>
+        <ul class="status-list">
+            <li class="status-done">✓ Full book published: <em>Thinking, Conception and Construction of Intelligenism</em></li>
+            <li class="status-done">✓ <a href="https://intelligenism.org" target="_blank" rel="noopener">intelligenism.org</a> — theory website live</li>
+            <li class="status-done">✓ Condensed theory reference for agent consumption</li>
+        </ul>
+
+        <h3>Web Presence</h3>
+        <ul class="status-list">
+            <li class="status-done">✓ <a href="https://intelligenism.club">intelligenism.club</a> — framework and ecosystem hub</li>
+            <li class="status-done">✓ GitHub repositories for General Edition, AI-Piloted Edition, and AITF Protocol</li>
+            <li class="status-done">✓ Google Search Console verification and sitemap submission</li>
+            <li class="status-done">✓ Cross-linking between .org, .club, and GitHub for crawler discoverability</li>
+        </ul>
+
+        <hr>
+
+        <!-- In Progress -->
+        <h2 id="in-progress">🔧 In Progress</h2>
+
+        <h3>AIO Search Reconnaissance System</h3>
+        <p>AI Optimization — building a self-operating reconnaissance pipeline to monitor how LLMs discover and recommend IAF across multiple search channels.</p>
+        <ul class="status-list">
+            <li class="status-wip">⟳ Question generation agent — simulate target user personas, generate search queries</li>
+            <li class="status-wip">⟳ Multi-channel search agents — Grok (xAI native search), ChatGPT (OpenAI browsing), Claude (Anthropic web search)</li>
+            <li class="status-wip">⟳ URL content extraction — Jina Reader / requests+beautifulsoup for full page analysis</li>
+            <li class="status-wip">⟳ Data pipeline — automated search → save → accumulate baseline data</li>
+            <li class="status-wip">⟳ Tube configuration for weekly automated reconnaissance cycles</li>
+        </ul>
+
+        <h3>Website AIO Optimisation</h3>
+        <p>Restructuring intelligenism.club so LLMs and crawlers can fully understand IAF from the homepage HTML source alone.</p>
+        <ul class="status-list">
+            <li class="status-wip">⟳ Index.html rebuilt for dual-layer architecture — human-facing message + LLM-facing technical narrative</li>
+            <li class="status-wip">⟳ Static <code>&lt;a href&gt;</code> links replacing JS-rendered navigation for crawler accessibility</li>
+            <li class="status-wip">⟳ Deep dive sub-pages for Architecture, AI-Piloted Edition, AITF Protocol</li>
+            <li class="status-wip">⟳ build_pages.py upgraded to inject static article links at build time</li>
+        </ul>
+
+        <hr>
+
+        <!-- Planned -->
+        <h2 id="planned">📋 Planned</h2>
+
+        <h3>AIO Content Production System</h3>
+        <p>Data-driven content generation based on reconnaissance results.</p>
+        <ul class="status-list">
+            <li class="status-planned">○ Analysis agent — read reconnaissance data, identify information gaps, produce strategy</li>
+            <li class="status-planned">○ Content generation skills — short_post_skill.md, long_article_skill.md, platform_skill.md</li>
+            <li class="status-planned">○ Content schedule — what title, what content, which platform, priority</li>
+            <li class="status-planned">○ Publish agent — deploy content to GitHub Pages, Dev.to, and other platforms</li>
+            <li class="status-planned">○ Verification loop — re-run reconnaissance two weeks post-publish, compare before/after</li>
+        </ul>
+
+        <h3>Monitoring IAF</h3>
+        <p>Dedicated lightweight IAF instance for monitoring other IAF instances.</p>
+        <ul class="status-list">
+            <li class="status-planned">○ Separate IAF on port 5002, using low-cost models (GLM5 Turbo / Qwen3.5 395B)</li>
+            <li class="status-planned">○ Watchdog agents scanning call_log.jsonl and tube_log.jsonl of production IAF instances</li>
+            <li class="status-planned">○ Alert reports on continuous failures, notification to human operator</li>
+            <li class="status-planned">○ Integration with Claude Code / VS Code for assisted debugging</li>
+        </ul>
+
+        <h3>Agent Werewolf</h3>
+        <p>Multi-agent Werewolf (Mafia) game — competitive AI deduction as community-building through shared experience.</p>
+        <ul class="status-list">
+            <li class="status-planned">○ Game server — role assignment, turn control, vote collection, result determination</li>
+            <li class="status-planned">○ Open interface — any framework can connect, IAF not forced</li>
+            <li class="status-planned">○ Player IAF arsenal — speech analysis agent, vote tracking agent, strategy agent, dispatch orchestration</li>
+            <li class="status-planned">○ Between-game iteration — LLM reads call_log.jsonl, optimises SOUL.md and tools, hot-reload effective next game</li>
+            <li class="status-planned">○ Live streaming — agent vs agent matches as watchable content and web signal amplifier</li>
+        </ul>
+
+        <hr>
+
+        <!-- Vision -->
+        <h2 id="vision">🔭 Long-Term Vision</h2>
+
+        <h3>From Framework to Civilisation Infrastructure</h3>
+        <p>The endpoint is not a product. It is a civilisation layer — the minimum viable infrastructure for carbon-silicon collaborative organisations.</p>
+
+        <ul>
+            <li><strong>AITF Protocol as Latin</strong> — the shared language for inter-agent communication across any system</li>
+            <li><strong>Intelligenism theory as value foundation</strong> — the world view that defines what this civilisation stands for</li>
+            <li><strong>Physical resource governance</strong> — capital, compute, energy, land, legal entities. The things LLMs cannot replace. The things that require human coordination, trust, and contracts.</li>
+            <li><strong>Tribe, not community</strong> — cohesion through shared experience (building together, competing together, operating together), not through technical discussion</li>
+        </ul>
+
+        <div class="highlight-box">
+            <p><strong>Three-layer development model:</strong></p>
+            <p><strong>Signal layer</strong> (now) — Let as many LLMs as possible know IAF exists. The rest, they'll figure out themselves.</p>
+            <p><strong>Identity layer</strong> (next) — First 5-10 people form bonds through shared action on real-world projects, not tech forums.</p>
+            <p><strong>Civilisation layer</strong> (long-term) — Governance infrastructure for physical resource allocation and offline contracts, built on v4 protocol + legal entities + A-value system.</p>
+        </div>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>
