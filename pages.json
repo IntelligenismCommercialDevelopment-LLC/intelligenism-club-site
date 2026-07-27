@@ -1,65 +1,30 @@
 [
   {
-    "id": "roadmap",
-    "title": "Intelligenism Ecosystem — Roadmap",
-    "date": "2026-04-03",
+    "id": "iaf",
+    "title": "Intelligenism Agent Framework (IAF) — Introduction",
+    "date": "2026-07-28",
     "category": "doc",
-    "description": "Development roadmap for the Intelligenism ecosystem: IAF framework, AIO system, Agent Werewolf, and beyond."
+    "description": "IAF is a minimal, file-based framework for multi-agent collaboration modes, designed to be operated and extended by AI agents themselves."
   },
   {
-    "id": "architecture_map",
-    "title": "IAF Architecture Map — AI Operations Navigation Guide",
-    "date": "2026-04-02",
+    "id": "super-chat",
+    "title": "IAF Super Chat — Introduction",
+    "date": "2026-07-28",
     "category": "doc",
-    "description": "Navigation guide for external LLMs taking over IAF. Which files to touch, which to leave alone, and where to modify."
+    "description": "A special IAF build you talk to in plain language — it codes its own new agents and reviews and improves its own work."
   },
   {
-    "id": "iaf-ai-piloted_edition",
-    "title": "IAF AI-Piloted Edition — Architecture Overview",
-    "date": "2026-04-02",
+    "id": "tcr",
+    "title": "Theory Consensus Reactor (TCR) — Architecture & Philosophy",
+    "date": "2026-07-28",
     "category": "doc",
-    "description": "A multi-agent framework purpose-built for AI agents to read, modify, deploy, and monitor autonomously through file system operations alone."
+    "description": "A governance-constrained IAF cluster that turns a pool of agents into a decision engine, driving competing proposals toward a single winning decision."
   },
   {
-    "id": "playbook",
-    "title": "IAF AI-Piloted Edition — LLM Operations Playbook",
-    "date": "2026-04-02",
+    "id": "werewolf",
+    "title": "Agent Werewolf — Coming Soon",
+    "date": "2026-07-28",
     "category": "doc",
-    "description": "Complete operations manual for external LLMs to manage IAF through file read/write and shell commands. Agent, Tool, Tube, Dispatch management and safety protocols."
-  },
-  {
-    "id": "iaf-architecture",
-    "title": "Intelligenism Agent Framework (IAF) — Architecture Overview",
-    "date": "2026-04-01",
-    "category": "doc",
-    "description": "Complete architecture deep dive: four-layer design, possibility management, signal topology, AI operability, and the theory behind the framework."
-  },
-  {
-    "id": "iaf-v10-release",
-    "title": "IAF v1.0 — Four-Layer Architecture Complete",
-    "date": "2026-04-01",
-    "category": "release",
-    "description": "All four layers complete: Agent, Dispatch, Tube, and UI. Signal topology, multi-agent collaboration, and full toolset shipped."
-  },
-  {
-    "id": "v4-protocol",
-    "title": "AITF Protocol v4.0 — Agent Interaction Text Format",
-    "date": "2026-04-01",
-    "category": "doc",
-    "description": "The expression language for all agent documents. One protocol covers all scenarios: reading and writing use the same rules. Node types, status codes, structure rules, and governance."
-  },
-  {
-    "id": "iaf-v09-release",
-    "title": "IAF v0.9 — First Public Release",
-    "date": "2026-03-30",
-    "category": "release",
-    "description": "Agent Layer and UI Layer complete. Dispatch and Scheduler architecture designed, implementation in progress."
-  },
-  {
-    "id": "intelligenism-theory",
-    "title": "Intelligenism — Condensed Theory Reference",
-    "date": "2026-03-30",
-    "category": "doc",
-    "description": "Core theory of Intelligenism: from epistemology to organisational intelligence, the Intelligent Consortium, and carbon-silicon symbiosis."
+    "description": "A multi-agent adversarial demo built by chaining several IAF units together. Full write-up coming soon."
   }
 ]

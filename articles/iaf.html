@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligenism Agent Framework (IAF) — Introduction</title>
+    <meta name="article-date" content="2026-07-28">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="IAF is a minimal, file-based framework for multi-agent collaboration modes, designed to be operated and extended by AI agents themselves.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+
+        /* scanline */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            border-bottom: 1px solid var(--border-dim);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep);
+            z-index: 100;
+        }
+        .top-bar-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        .theory-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold) !important;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid rgba(240,200,102,0.3);
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .theory-link:hover {
+            background: rgba(240,200,102,0.1);
+            border-color: var(--accent-gold);
+        }
+
+        /* ===== ARTICLE LAYOUT ===== */
+        .article {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ===== ARTICLE HEADER ===== */
+        .article-header {
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+        .article-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--accent-cyan);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            text-shadow: 0 0 25px rgba(0,229,160,0.25);
+        }
+        .article-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-gold);
+            margin-top: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+        .article-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+        .article-meta .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        /* ===== HEADINGS ===== */
+        .article h2 {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin: 56px 0 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.03em;
+        }
+        .article h3 {
+            font-family: var(--font-pixel);
+            font-size: 1.35rem;
+            color: var(--accent-gold);
+            margin: 36px 0 14px;
+        }
+
+        /* ===== BODY TEXT ===== */
+        .article p {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .article strong {
+            color: var(--bold-color);
+            font-weight: 600;
+        }
+
+        /* ===== BLOCKQUOTES ===== */
+        .article blockquote {
+            border-left: 3px solid var(--accent-gold);
+            background: rgba(240,200,102,0.06);
+            padding: 16px 20px;
+            margin: 24px 0;
+            font-size: 0.88rem;
+            color: #d0d0c8;
+            line-height: 1.7;
+        }
+        .article blockquote .quote-source {
+            display: block;
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--accent-gold);
+            font-size: 0.82rem;
+        }
+
+        /* ===== LISTS ===== */
+        .article ul, .article ol {
+            margin: 12px 0 20px 20px;
+        }
+        .article li {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+        .article li strong {
+            color: var(--accent-gold);
+        }
+
+        /* ===== STATUS LIST ===== */
+        .status-list {
+            list-style: none;
+            margin-left: 0;
+            padding: 0;
+        }
+        .status-list li {
+            padding: 6px 0;
+            font-size: 0.9rem;
+        }
+        .status-done { color: var(--accent-cyan); }
+        .status-wip { color: var(--accent-gold); }
+
+        /* ===== CODE BLOCKS ===== */
+        .article pre {
+            background: #0e0e1c;
+            border: 1px solid var(--border-dim);
+            padding: 18px 20px;
+            margin: 16px 0 24px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #c8c8d0;
+        }
+        .article code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            background: rgba(0,229,160,0.08);
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+        .article pre code {
+            background: none;
+            padding: 0;
+            color: #c8c8d0;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0 28px;
+        }
+        .article table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .article thead th {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--border-dim);
+            white-space: nowrap;
+        }
+        .article tbody td {
+            padding: 9px 14px;
+            border: 1px solid var(--border-dim);
+            color: var(--text-bright);
+            vertical-align: top;
+        }
+        .article tbody tr:nth-child(even) {
+            background: rgba(26,26,50,0.5);
+        }
+        .article tbody td:first-child {
+            color: var(--accent-gold);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-cyan);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box p {
+            margin-bottom: 8px;
+        }
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== SECTION DIVIDER ===== */
+        .article hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-dim), transparent);
+            margin: 48px 0;
+        }
+
+        /* ===== LINKS ===== */
+        .article a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        .article a:hover { text-decoration: underline; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px;
+            border-top: 1px solid var(--border-dim);
+            text-align: center;
+        }
+        .footer-text {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .footer-text a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .article { padding: 32px 16px 60px; }
+            .article h2 { font-size: 1.5rem; margin-top: 40px; }
+            .article h3 { font-size: 1.2rem; }
+            .top-bar-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-links { gap: 12px; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#why">Why</a>
+                <a href="#concepts">Concepts</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#theory">Theory</a>
+                <a href="#start">Get It</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">Intelligenism Agent Framework</h1>
+            <p class="article-tagline">A minimal, file-based framework for multi-agent collaboration modes — designed to be operated and extended by AI agents themselves, not just by humans.</p>
+            <p class="article-meta">2026-07-28 <span class="badge">AI Operability Edition · v1.1</span></p>
+        </header>
+
+        <p>
+            IAF is an open-source framework for building <strong>multi-agent collaboration modes</strong>.
+            A running IAF instance is just a directory. You create a new collaboration pattern by
+            <strong>copying a folder</strong>, you give an agent new abilities by <strong>dropping a
+            <code>*_tools.py</code> file</strong> into it, and you reconfigure the whole system by
+            <strong>editing plain JSON</strong> — no framework code changes required. Every extension
+            point has an explicit contract and a machine-checkable validator, so an LLM can safely read
+            the system, modify it, and verify its own work.
+        </p>
+
+        <hr>
+
+        <h2 id="why">Why "AI Operability Edition"</h2>
+        <p>
+            Most agent frameworks are built for human developers to write code. This edition is tuned so
+            that an <strong>AI agent can operate the framework end-to-end</strong> — the extension surface
+            is small, declarative, contract-bound, and verifiable, which are exactly the properties an
+            autonomous agent needs to modify a system safely.
+        </p>
+        <ul>
+            <li><strong>Explicit contracts.</strong> A tool contract specifies exactly how a new tool file must be written, so an LLM can author one correctly on the first try.</li>
+            <li><strong>Machine-checkable validation.</strong> <code>validate.py</code> reports <code>OK</code> or a precise list of <code>FAIL</code> reasons — an agent can self-check after editing.</li>
+            <li><strong>A machine-readable system map.</strong> <code>generate_manifest.py</code> emits a <code>MANIFEST.json</code> describing every dispatch, agent, and tool — an agent can discover the system without reading source.</li>
+            <li><strong>Config / engine separation.</strong> All edits happen in plain JSON and Markdown; the engine is a black box an agent cannot break by reconfiguring it.</li>
+            <li><strong>Copy-to-extend.</strong> New capability is a copied folder or a dropped-in file, never a patch to core code.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="concepts">Core Concepts</h2>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td>Dispatch</td><td>A <em>collaboration mode</em> — one self-contained pattern of how one or more agents cooperate to do a job. Each dispatch is a folder.</td></tr>
+                <tr><td>Agent</td><td>A single configured LLM persona inside a dispatch: its provider, model, system context, and tools. One dispatch can host several agents.</td></tr>
+                <tr><td>Tool</td><td>A Python function an agent can call, exported from a <code>*_tools.py</code> file. Auto-discovered — no registration code.</td></tr>
+                <tr><td>Shell</td><td>The layout that separates <em>what you edit</em> from <em>the engine that runs</em>.</td></tr>
+                <tr><td>Engine</td><td><code>IAF_AI/</code> — the runtime. You never edit it; it is driven entirely by config and prompts.</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>
+            The central idea: <strong>a dispatch is a copyable unit.</strong> To build a new kind of agent
+            collaboration, you copy the prototype dispatch, adjust its config and prompts, and it runs.
+            Dozens or hundreds of specialized dispatches can be spun off the same prototype.
+        </p>
+
+        <hr>
+
+        <h2 id="architecture">The Shell: Four Zones</h2>
+        <p>An IAF instance separates configuration, prompts, outputs, and the engine into four zones:</p>
+        <pre><code>{iaf_instance}/
+├── config_base/   ZONE 1 — CONFIG   (source of truth; humans/agents edit here)
+├── prompt_base/   ZONE 2 — PROMPTS  (the only home for prompt/rule files)
+├── workspace/     ZONE 3 — OUTPUTS  (run artifacts land here)
+└── IAF_AI/        ZONE 4 — ENGINE   (runtime; never edited by hand)</code></pre>
+        <p>The flow of truth is one-directional. Four rules make it work:</p>
+        <ul>
+            <li><strong>config_base/ is the source of truth.</strong> Humans and agents only ever edit files here.</li>
+            <li><strong>prompt_base/ is the single home for prompts.</strong> Editing a prompt takes effect immediately — no sync needed.</li>
+            <li><strong>Engine-internal config is generated.</strong> <code>sync_config.py</code> writes it; never hand-edit it.</li>
+            <li><strong>The engine is never modified.</strong> The kernel and tool code stay untouched across every specialization.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="theory">The Theory Behind It</h2>
+        <p>
+            IAF is the first practical implementation of
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Intelligenism</a> — a theory
+            of how intelligence emerges in organisations, whether human, artificial, or hybrid.
+        </p>
+        <blockquote>
+            From single neurons to complex neural networks, intelligence exhibits a bottom-up construction
+            pattern. The complexity and intelligence potential of a network comes from the connections
+            between individuals, not from making the individuals internally more complex. Maintaining the
+            independence of individuals or small units, and expressing complexity outside the individual,
+            is the essence of connectionism.
+            <span class="quote-source">— Thinking, Conception and Construction of Intelligenism</span>
+        </blockquote>
+        <p>
+            This principle directly shapes IAF's architecture: every agent is a complete, independent unit.
+            Complexity lives in the connections between agents, not inside any single agent's code. Where
+            most frameworks practice <strong>certainty management</strong> — hardcoding one collaboration
+            paradigm and calling it flexible — IAF practices <strong>possibility management</strong>: each
+            agent owns a complete copy of the engine, so you can change anything without risking the rest.
+        </p>
+
+        <hr>
+
+        <h2 id="start">Get It</h2>
+        <div class="highlight-box">
+            <p><strong>GitHub:</strong> <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework" target="_blank" rel="noopener">IntelligenismCommercialDevelopment-LLC/intelligenism-agent-framework ↗</a></p>
+            <p>Pure Python. Copy a folder to spawn a new collaboration mode; drop in a file to give it new abilities; edit JSON to reconfigure. Small unit, big potential.</p>
+        </div>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>
