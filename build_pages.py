@@ -54,6 +54,13 @@ def scan_articles():
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
 
+        # Skip redirect stubs (old URLs kept only to 301 legacy inbound links to
+        # their successor). They must NOT re-enter pages.json / sitemap.xml, or
+        # Google would re-index the very URLs we're retiring.
+        if 'http-equiv="refresh"' in content:
+            print(f"  (skip redirect stub) {filename}")
+            continue
+
         page_id = filename.replace('.html', '')
         title = extract_title(content) or page_id
         date_str = extract_meta(content, 'article-date') or '1970-01-01'

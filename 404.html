@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Page Not Found · INTELLIGENISM.CLUB</title>
+    <meta name="robots" content="noindex, follow">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-card: #1a1a32;
+            --border-dim: #2a2a4a;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --accent-cyan: #00e5a0;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: var(--font-body);
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            pointer-events: none; z-index: 9999;
+        }
+        .wrap { max-width: 640px; text-align: center; }
+        .code {
+            font-family: var(--font-pixel);
+            font-size: 6rem; line-height: 1;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 18px rgba(0, 229, 160, 0.35);
+        }
+        h1 { font-size: 1.3rem; margin: 0.6rem 0 1rem; letter-spacing: 0.04em; }
+        p { color: var(--text-secondary); margin-bottom: 2rem; }
+        .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .links a {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            padding: 10px 16px;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .links a:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .home { margin-top: 1.6rem; }
+        .home a { color: var(--accent-cyan); text-decoration: none; }
+        .home a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <div class="code">404</div>
+        <h1>This page moved or no longer exists</h1>
+        <p>The site was restructured around the Intelligenism Agent Framework (IAF). Here's where to go:</p>
+        <nav class="links">
+            <a href="/articles/iaf.html">IAF — Introduction</a>
+            <a href="/articles/super-chat.html">IAF Super Chat</a>
+            <a href="/articles/tcr.html">Theory Consensus Reactor</a>
+        </nav>
+        <p class="home"><a href="/">← Back to intelligenism.club</a></p>
+    </main>
+</body>
+</html>
