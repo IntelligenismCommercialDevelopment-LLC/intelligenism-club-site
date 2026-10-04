@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEV Voice Agent — Introduction</title>
+    <meta name="article-date" content="2026-10-04">
+    <meta name="article-category" content="doc">
+    <meta name="article-description" content="A special IAF build for spoken conversation, where the hard problem is turn-taking rather than speech. Two independent JEV judgements decide when there is enough to answer and when the person has actually finished.">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-deep: #0c0c18;
+            --bg-surface: #141428;
+            --bg-card: #1a1a32;
+            --bg-card-hover: #22224a;
+            --border-dim: #2a2a4a;
+            --border-glow: #00e5a0;
+            --text-bright: #f5f5f0;
+            --text-primary: #e0e0e8;
+            --text-secondary: #8888a0;
+            --text-dim: #55556a;
+            --accent-cyan: #00e5a0;
+            --accent-gold: #f0c866;
+            --accent-blue: #5b8def;
+            --accent-pink: #e06090;
+            --bold-color: #ffd866;
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            --font-body: 'IBM Plex Mono', monospace;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: var(--font-body);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+
+        /* scanline */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            border-bottom: 1px solid var(--border-dim);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep);
+            z-index: 100;
+        }
+        .top-bar-inner {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        .theory-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-gold) !important;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-decoration: none;
+            padding: 4px 10px;
+            border: 1px solid rgba(240,200,102,0.3);
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .theory-link:hover {
+            background: rgba(240,200,102,0.1);
+            border-color: var(--accent-gold);
+        }
+
+        /* ===== ARTICLE LAYOUT ===== */
+        .article {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ===== ARTICLE HEADER ===== */
+        .article-header {
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+        .article-title {
+            font-family: var(--font-pixel);
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--accent-cyan);
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            text-shadow: 0 0 25px rgba(0,229,160,0.25);
+        }
+        .article-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--accent-gold);
+            margin-top: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+        .article-meta {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 12px;
+        }
+        .article-meta .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        /* ===== HEADINGS ===== */
+        .article h2 {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin: 56px 0 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.03em;
+        }
+        .article h3 {
+            font-family: var(--font-pixel);
+            font-size: 1.35rem;
+            color: var(--accent-gold);
+            margin: 36px 0 14px;
+        }
+
+        /* ===== BODY TEXT ===== */
+        .article p {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .article strong {
+            color: var(--bold-color);
+            font-weight: 600;
+        }
+
+        /* ===== BLOCKQUOTES ===== */
+        .article blockquote {
+            border-left: 3px solid var(--accent-gold);
+            background: rgba(240,200,102,0.06);
+            padding: 16px 20px;
+            margin: 24px 0;
+            font-size: 0.88rem;
+            color: #d0d0c8;
+            line-height: 1.7;
+        }
+        .article blockquote .quote-source {
+            display: block;
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--accent-gold);
+            font-size: 0.82rem;
+        }
+
+        /* ===== LISTS ===== */
+        .article ul, .article ol {
+            margin: 12px 0 20px 20px;
+        }
+        .article li {
+            font-size: 0.9rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            line-height: 1.7;
+        }
+        .article li strong {
+            color: var(--accent-gold);
+        }
+
+        /* ===== STATUS LIST ===== */
+        .status-list {
+            list-style: none;
+            margin-left: 0;
+            padding: 0;
+        }
+        .status-list li {
+            padding: 6px 0;
+            font-size: 0.9rem;
+        }
+        .status-done { color: var(--accent-cyan); }
+        .status-wip { color: var(--accent-gold); }
+
+        /* ===== CODE BLOCKS ===== */
+        .article pre {
+            background: #0e0e1c;
+            border: 1px solid var(--border-dim);
+            padding: 18px 20px;
+            margin: 16px 0 24px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: #c8c8d0;
+        }
+        .article code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            background: rgba(0,229,160,0.08);
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+        .article pre code {
+            background: none;
+            padding: 0;
+            color: #c8c8d0;
+        }
+
+        /* ===== TABLES ===== */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 16px 0 28px;
+        }
+        .article table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .article thead th {
+            background: var(--bg-card);
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--border-dim);
+            white-space: nowrap;
+        }
+        .article tbody td {
+            padding: 9px 14px;
+            border: 1px solid var(--border-dim);
+            color: var(--text-bright);
+            vertical-align: top;
+        }
+        .article tbody tr:nth-child(even) {
+            background: rgba(26,26,50,0.5);
+        }
+        .article tbody td:first-child {
+            color: var(--accent-gold);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ===== HIGHLIGHT BOX ===== */
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--accent-cyan);
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .highlight-box p {
+            margin-bottom: 8px;
+        }
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ===== SECTION DIVIDER ===== */
+        .article hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-dim), transparent);
+            margin: 48px 0;
+        }
+
+        /* ===== LINKS ===== */
+        .article a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        .article a:hover { text-decoration: underline; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 24px;
+            border-top: 1px solid var(--border-dim);
+            text-align: center;
+        }
+        .footer-text {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .footer-text a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+        .footer-text a:hover { color: var(--accent-cyan); }
+        .footer-links {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .article { padding: 32px 16px 60px; }
+            .article h2 { font-size: 1.5rem; margin-top: 40px; }
+            .article h3 { font-size: 1.2rem; }
+            .top-bar-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .nav-links { gap: 12px; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-bar">
+        <div class="top-bar-inner">
+            <div class="nav-links">
+                <a href="/">← Home</a>
+                <a href="#problem">The Problem</a>
+                <a href="#jev">JEV</a>
+                <a href="#reply-list">Reply List</a>
+                <a href="#mouth">The Mouth</a>
+                <a href="#gate">The Gate</a>
+                <a href="#start">Get It</a>
+            </div>
+            <a href="https://intelligenism.org" target="_blank" rel="noopener" class="theory-link">
+                📖 Intelligenism Full Theory ↗
+            </a>
+        </div>
+    </nav>
+
+    <article class="article">
+
+        <header class="article-header">
+            <h1 class="article-title">JEV Voice Agent</h1>
+            <p class="article-tagline">A spoken-conversation agent whose hard problem is not speech — it is turn-taking. Two independent JEV judgements decide when there is enough to answer, and when the person has actually finished.</p>
+            <p class="article-meta">2026-10-04 <span class="badge">Derived from IAF v1.1</span></p>
+        </header>
+
+        <p>
+            Speech recognition and speech synthesis are bought from an API. They are solved, and they
+            are not what this build is about. The hard problem in a spoken conversation is
+            <strong>turn-taking</strong>: knowing when the person has finished, and knowing when it is
+            your turn to speak.
+        </p>
+        <p>
+            Those are two different questions, and the central claim of this build is that they have to
+            be asked separately — by two independent judges, looking at two different pieces of text.
+        </p>
+
+        <pre><code>          ┌───────────────── the ear ──────────────────┐
+ mic ─▶ STT ─▶ U      partials overwrite, finals append
+          │
+          │  ticker, 1 Hz
+          ▼
+       JEV#1   "is there enough content to answer yet?"
+          │                        └─ false ─▶ wait
+          │ true
+          ▼
+   ┌──────────────┐
+   │  reply list  │ ◀── more cuts pile up while the LLM is busy
+   └──────────────┘
+          │
+          │  AND the person has been quiet long enough
+          ▼
+         LLM     one turn — every pending cut, joined with spaces
+          │
+          │ text streams out in chunks
+          ▼
+      GateSink   holds the first chunk, and asks:
+          │
+       JEV#2   "has this person finished their turn?"
+          │                        └─ false ─▶ keep holding
+          │ true
+          ▼
+       MicGate   mutes the mic while we are speaking
+          ▼
+      SpeakSink ─▶ TTS ─▶ speaker
+          └──────────────── the mouth ─────────────────┘</code></pre>
+
+        <hr>
+
+        <h2 id="problem">Why Turn-Taking Is the Whole Problem</h2>
+        <p>
+            A naive voice agent waits for the speech-to-text provider to announce "end of utterance",
+            then replies. That fails in both directions, constantly:
+        </p>
+        <ul>
+            <li><strong>It interrupts.</strong> You say <em>"I have three questions, the first one is about indexes."</em> That is a grammatically complete sentence, so the provider closes the utterance — and the agent starts answering question one while you are drawing breath for question two.</li>
+            <li><strong>It stalls.</strong> You say <em>"I wanted to ask"</em> and pause to think. Nothing in the transcript closes, so nothing happens, and the silence stretches until you repeat yourself.</li>
+        </ul>
+        <p>
+            Neither failure raises an error. Both just make the conversation feel wrong. So the system
+            needs an actual judgement — and it needs two of them, because
+            <strong>the same text gets opposite answers depending on which question you ask</strong>:
+        </p>
+
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th></th><th>JEV#1 — the ear</th><th>JEV#2 — the mouth</th></tr></thead>
+            <tbody>
+                <tr><td>Question</td><td>Is there <strong>enough content to answer</strong>?</td><td>Has this person <strong>finished their turn</strong>?</td></tr>
+                <tr><td>What it reads</td><td>the live transcript since the last submission</td><td>the whole chunk just submitted, plus what the silence has done since</td></tr>
+                <tr><td>If true</td><td>submit into the reply list, start the LLM</td><td>open the gate, start speaking</td></tr>
+                <tr><td>"I have three questions, the first is about indexes."</td><td><strong>true</strong> — that sentence is answerable</td><td><strong>false</strong> — he obviously has two more</td></tr>
+                <tr><td>"uh… so… the…"</td><td>false — no content</td><td>false — still hunting for a word</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="highlight-box">
+            <p>
+                Those two rows <strong>are</strong> the design. One judge cannot answer both questions,
+                and collapsing them produces exactly the interrupting agent described above.
+            </p>
+        </div>
+
+        <hr>
+
+        <h2 id="jev">JEV — A Judgement, Not a Prompt</h2>
+        <p>
+            <strong>JEV</strong> is a judgement call made by a model through a <em>decisions</em> API: it
+            takes a state string and a question with explicit criteria, and returns a calibrated scalar
+            plus a verdict. It is not a chat completion, and the build does not treat it as one. Three
+            consequences shape the code:
+        </p>
+
+        <h3>1. The question file is the policy</h3>
+        <p>
+            Both questions live in version control as authoritative files, and each contains exactly one
+            fenced JSON block. The client reads <strong>only that block</strong> — everything around it
+            is reasoning written for humans and never reaches the model. Editing the block is editing
+            behaviour, so it is reviewed like code.
+        </p>
+
+        <h3>2. The examples are hand-written, never copied from the corpus</h3>
+        <p>
+            If you paste real recorded utterances into the question and then measure accuracy against
+            those same recordings, you have measured recitation. The entire corpus stays held out as the
+            test set, and the benchmark enforces the separation.
+        </p>
+
+        <h3>3. A verdict that cannot be read is an error, never a false</h3>
+        <p>
+            If the response comes back without a readable scalar, the client raises. Degrading to "not
+            complete" instead would produce a system that <strong>never opens its mouth</strong> while
+            reporting no error anywhere — the worst failure mode available.
+        </p>
+
+        <p>Two further details that cost real debugging to learn:</p>
+        <ul>
+            <li><strong>Thresholds are scanned, not chosen.</strong> JEV#1's threshold of 0.65 sits in the middle of a plateau found by sweeping a labelled corpus. JEV#2's threshold of 0.6 has never been scanned — it is a guess, and it is annotated as a guess in the config and listed under Known Limits rather than quietly shipped as a number.</li>
+            <li><strong>A late verdict is discarded, never acted on, and never cancelled.</strong> Requests go out roughly once a second and can return out of order; by the time a slow one comes back, the transcript it looked at is stale, and acting on it would submit a fragment as though it were complete. The in-flight request is <em>not</em> cancelled, because cancelling poisons the connection pool — measured, the next call goes from 352–421 ms to 1119–1425 ms.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="reply-list">The Reply List</h2>
+        <p>
+            The reply list is the spine of the build. It exists because speech does not arrive in neat
+            turns, and because a crashed process must not silently lose what someone said. Every piece
+            of state is a <strong>file</strong> in the session directory, so the conversation survives
+            the process dying.
+        </p>
+
+        <h3>One utterance, three cuts, one turn</h3>
+        <p>
+            You say something, pause, add to it, pause, add again. JEV#1 passes three times, so three
+            <strong>cuts</strong> enter the reply list. They do <em>not</em> become three LLM calls:
+        </p>
+        <pre><code>cut 1 ─┐
+cut 2 ─┼──▶  one drain  ──▶  "cut one cut two cut three"  ──▶  one LLM turn
+cut 3 ─┘</code></pre>
+        <p>
+            The cuts are joined with <strong>spaces, not newlines</strong> — newlines nudge the model
+            into answering each fragment separately. And when cuts arrive while the LLM is already
+            working, they simply accumulate and are eaten <strong>in one go</strong> by the next turn.
+            That behaviour is what the whole structure exists to produce.
+        </p>
+
+        <h3>The five pieces</h3>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Piece</th><th>Job</th><th>The failure it prevents</th></tr></thead>
+            <tbody>
+                <tr><td>Reservoir</td><td>the reply list itself — cuts land here, a turn takes the whole batch</td><td>the batch is taken by an atomic rename, so a cut written at the same instant cannot be lost</td></tr>
+                <tr><td>UserBuffer</td><td>the live transcript — a partial overwrites the current segment, a final freezes it and starts a new one</td><td>empty partials and empty finals really do arrive from the provider; unguarded, the first wipes a half-spoken sentence and the second grows the file forever while reading perfectly normally</td></tr>
+                <tr><td>SilenceCounter</td><td>how long the person has actually been quiet</td><td>it reads the <strong>audio timeline</strong> the provider stamps on each event, not arrival time, and clamps the correction so clock drift can only under-report</td></tr>
+                <tr><td>SpokenLedger</td><td>what was really spoken, versus what was merely generated</td><td>reconciliation only ever truncates — over-reporting would write words into the transcript that never left the speaker, producing a lying record</td></tr>
+                <tr><td>VoiceDriver</td><td>one pump call = exactly one turn, start to finish</td><td>—</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>A turn has exactly one ending</h3>
+        <p>
+            Earlier versions had three: finish, get interrupted, get invalidated. All of them are gone.
+            <strong>Once a turn starts, it finishes and it is written down.</strong> If you speak while
+            the machine is speaking, your words go into the reply list and wait — they do not cut it off.
+        </p>
+        <p>
+            This is deliberate, and it is defended at the source level, because the deleted machinery is
+            easy to reinstate by accident: restoring one interrupt event turns no behavioural assertion
+            red, since nobody sets it, but the next person to read the code will wire the trigger back
+            up. So four assertions parse the source with Python's <code>ast</code> module and fail if the
+            names come back.
+        </p>
+
+        <h3>Three places deliberately throw away what a person said</h3>
+        <p>All three leave a trace, because the one thing worse than dropping a sentence is dropping it silently:</p>
+        <ol>
+            <li><strong>Three strikes.</strong> The transcript is judged insufficient three ticks running <em>with no growth</em>. The "no growth" clause is the entire safeguard against cutting off someone who is still talking.</li>
+            <li><strong>The delivered watermark.</strong> JEV#1 passes on a partial, the buffer is cleared, and then that block's <em>final</em> arrives and writes the same sentence back into the empty buffer. Without a watermark, the same sentence gets answered twice — it happened in two turns out of six on a real session. The watermark cuts only a <strong>verbatim prefix</strong>, never a character of new text, and declines to cut at all when coverage drops below threshold: better to repeat a few words than to bite the head off a sentence.</li>
+            <li><strong>The hallucination gate.</strong> In one session, three seconds after the mic opened with nobody speaking, the provider emitted a confident sentence over a 0.62-second audio window. It drove a full LLM turn, a full TTS turn, and was written permanently into memory. The test is <strong>speech rate</strong> (11.31 units/sec, against a real person's fastest 4.31), not content, so the gate does not drift with the topic — and it defaults to <em>letting things through</em> when duration is missing, because losing one hallucination is cheaper than swallowing whole batches of real speech.</li>
+        </ol>
+
+        <hr>
+
+        <h2 id="mouth">The Mouth</h2>
+        <p>
+            The reply does not go straight to the speaker. The first chunk is <strong>held at a
+            gate</strong> while JEV#2 decides whether you have finished, across three bands:
+        </p>
+        <div class="table-wrap">
+        <table>
+            <thead><tr><th>Real silence</th><th>What happens</th><th>Cost</th></tr></thead>
+            <tbody>
+                <tr><td>under 1.0 s</td><td>hold — do not even ask</td><td>free</td></tr>
+                <tr><td>between the bounds</td><td>ask JEV#2, rate-limited to once per extra second of silence</td><td>one request</td></tr>
+                <tr><td>6.0 s or more</td><td>open unconditionally — do not ask</td><td>free</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>
+            Checking the gate is free; asking JEV#2 costs money. Without the rate limit, dropping the
+            mouth's tick interval from 1.0 s to 0.25 s would have quadrupled the bill while running
+            perfectly and raising nothing. Once the gate opens it forwards transparently — only the
+            first chunk of a turn ever waits.
+        </p>
+        <p>
+            <strong>MicGate</strong> then mutes the microphone for exactly as long as the machine is
+            speaking, plus a short tail for room reverberation. Without it, the shape is: speech out of
+            the speaker → into the mic → transcribed → drives another turn → a full LLM and a full TTS
+            every lap, <strong>spending real money</strong> — and since nothing interrupts anything, it
+            sounds like a normal conversation while it happens.
+        </p>
+        <p>
+            It sits <strong>inside</strong> the gate and <strong>outside</strong> the speaking sink.
+            Outside the gate it would mute the mic while the gate is still waiting, destroying the very
+            silence measurement the gate depends on. It releases in a <code>finally</code>, because one
+            exception leaving the mic muted means permanently deaf, with nothing on screen to say so.
+        </p>
+        <blockquote>
+            <p>
+                MicGate is not acoustic echo cancellation. It stops the machine hearing <em>itself</em>.
+                It does not stop it hearing another person, or a second device playing audio. The script
+                asks you to confirm your setup before opening the mic, every time.
+            </p>
+            <span class="quote-source">— from the repository README</span>
+        </blockquote>
+
+        <hr>
+
+        <h2 id="memory">Memory</h2>
+        <p>
+            Conversation is appended to a per-peer thread file by <strong>the script,
+            deterministically</strong> — the model generates text, it never writes the record. The file
+            survives the process exiting, which also means the last run's conversation is context for
+            the next one.
+        </p>
+        <p>
+            A retention window of recent blocks is injected verbatim every turn, sized by a
+            <strong>token budget</strong> rather than a block count, with a hard floor underneath it: a
+            single long monologue makes a pure budget compute zero blocks, and the agent then cannot
+            remember the sentence you just said. Older blocks are compressed into a summary on a worker
+            thread — running that blocking call inline jams the event loop, and for those seconds nobody
+            consumes mic frames. The file is archived before every overwrite, because compression is
+            lossy and that file is the only store of the verbatim words.
+        </p>
+
+        <hr>
+
+        <h2 id="gate">The Gate — 151 Offline Assertions</h2>
+        <p>
+            Everything above runs under a regression gate with <strong>151 assertions</strong>: no LLM,
+            no network, no microphone, roughly a tenth of a second, and it writes nothing outside a
+            sandbox. It is the main reason the repository is worth reading, because nearly every
+            assertion is a regression for a specific failure that <strong>ran, produced no error, and
+            sounded fine</strong>.
+        </p>
+        <p>
+            Each assertion carries its own reasoning inline, so the file doubles as the design record —
+            why barge-in was removed, why the silence reading is measured in seconds rather than ticks,
+            why a stub's duration has to be physically plausible.
+        </p>
+        <div class="highlight-box">
+            <p>
+                <strong>The structural technique worth stealing:</strong> where an assertion must check
+                that a deleted mechanism has not returned, it parses the source with <code>ast</code>
+                rather than grepping. The prose explaining a deletion necessarily names the deleted
+                thing — so a grep would match its own documentation and stay permanently red.
+            </p>
+        </div>
+
+        <hr>
+
+        <h2 id="limits">Known Limits</h2>
+        <p>Stated plainly, because none of these announce themselves at runtime.</p>
+        <ul>
+            <li><strong>JEV#2's threshold is a guess.</strong> JEV#1's was scanned across a labelled corpus; JEV#2's never was. The benchmark that would fix it has not been built.</li>
+            <li><strong>The gate's lower bound sits below the mid-sentence peak.</strong> The silence reading naturally climbs to 1.6–2.2 s <em>while someone is still speaking</em>, so at 1.0 s the gate often asks JEV#2 mid-sentence — 36 of 38 measured within-sentence gaps. A knowing trade-off: raise it toward 2.0 to tighten, and change nothing else.</li>
+            <li><strong>Every calibrated number was measured on recordings of one person speaking Chinese.</strong> The speech-rate ceiling, the pipeline lag, the thresholds, the retention budget. The <em>shapes</em> of the defects are language-independent and several were re-observed verbatim in English, but no number has been re-validated on English speech. Treat them as starting points and re-scan on your own corpus.</li>
+            <li><strong>The corpus ships empty.</strong> The original recordings are of a specific person and are not distributed. Record and label your own and the benchmark becomes runnable; six corpus-replay assertions were removed from the gate rather than left permanently skipped.</li>
+            <li><strong>No automatic STT reconnect</strong>, and the TTS session permit expires after 600 s untreated — the symptom is that it quietly stops speaking while every turn still reports success.</li>
+        </ul>
+
+        <hr>
+
+        <h2 id="start">Get It</h2>
+        <div class="highlight-box">
+            <p><strong>GitHub:</strong> <a href="https://github.com/IntelligenismCommercialDevelopment-LLC/jev_voice_agent" target="_blank" rel="noopener">IntelligenismCommercialDevelopment-LLC/jev_voice_agent ↗</a></p>
+            <p>Requires Python 3.12 or newer, a microphone, and headphones. Run the offline gate first — it is free and takes about a tenth of a second.</p>
+            <p>Derived from the AI Operability Edition of the <a href="/articles/iaf.html">Intelligenism Agent Framework</a> — specialized into a spoken-conversation agent built around two independent turn-taking judgements.</p>
+        </div>
+
+    </article>
+
+    <footer class="footer">
+        <p class="footer-text">
+            INTELLIGENISM.CLUB — Built by
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">Minghai Zhuo</a>
+        </p>
+        <div class="footer-links">
+            <a href="https://intelligenism.org" target="_blank" rel="noopener">.org</a>
+            <a href="https://github.com/IntelligenismCommercialDevelopment-LLC" target="_blank" rel="noopener">GitHub</a>
+        </div>
+    </footer>
+
+</body>
+</html>

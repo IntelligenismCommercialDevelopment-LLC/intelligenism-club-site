@@ -1,5 +1,12 @@
 [
   {
+    "id": "jev-voice-agent",
+    "title": "JEV Voice Agent — Introduction",
+    "date": "2026-10-04",
+    "category": "doc",
+    "description": "A special IAF build for spoken conversation, where the hard problem is turn-taking rather than speech. Two independent JEV judgements decide when there is enough to answer and when the person has actually finished."
+  },
+  {
     "id": "iaf",
     "title": "Intelligenism Agent Framework (IAF) — Introduction",
     "date": "2026-07-28",
